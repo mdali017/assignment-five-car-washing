@@ -55,6 +55,7 @@ const ServicesPage: React.FC = () => {
             className="border rounded p-2 " 
           />
         </div>
+        {/*  */}
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
