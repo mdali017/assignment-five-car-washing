@@ -14,6 +14,19 @@ export const baseApi = createApi({
       }),
       providesTags: ["Services"],
     }),
+    getSlotAvailability: builder.query({
+      query: ({ date, serviceId }: { date: string; serviceId: string | null }) => ({
+        url: "/api/slots/availability",
+        method: "GET",
+        params: { date, serviceId },
+      }),
+    }),
+    getSingleService: builder.query({
+      query: (id) => ({
+        url: `/api/services/${id}`,
+        method: "GET",
+      }),
+    }),
     userRegistration: builder.mutation({
       query: (data) => ({
         url: "/api/auth/signup",
@@ -35,4 +48,5 @@ export const {
   useGetAllServicesQuery,
   useUserRegistrationMutation,
   useUserLoginMutation,
+  useGetSlotAvailabilityQuery,
 } = baseApi;

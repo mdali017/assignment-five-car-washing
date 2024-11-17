@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { useGetAllServicesQuery } from "../../redux/api/api";
+import { Link } from "react-router-dom";
 
 const ServicesPage: React.FC = () => {
   const {
@@ -71,12 +72,14 @@ const ServicesPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredServices.map((service: any) => (
-          <div key={service._id} className="border p-4 rounded shadow-sm">
-            <h2 className="text-xl font-semibold">{service.name}</h2>
-            <p>{service.description}</p>
-            <p>Price: ${service.price}</p>
-            <p>Duration: {service.duration} mins</p>
-          </div>
+          <Link to={`/services/${service._id}`} key={service._id}>
+            <div className="border p-4 rounded shadow-sm">
+              <h2 className="text-xl font-semibold">{service.name}</h2>
+              <p>{service.description}</p>
+              <p>Price: ${service.price}</p>
+              <p>Duration: {service.duration} mins</p>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
