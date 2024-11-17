@@ -6,6 +6,7 @@ import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import Login from "../pages/Authentication/Login";
 import ServicesPage from "../pages/Services/Services";
 import ServiceDetailsPage from "../pages/ServicesDetails/SercicesDetails";
+import UserDashboard from "../pages/Dashboard/UserDashboard/UserDashboard";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/services/:id",
-        element: <ServiceDetailsPage  />
+        element: <ServiceDetailsPage />,
       },
     ],
   },
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/auth/login",
     element: <Login />,
+  },
+  {
+    path: "/user-dashboard",
+    element: <UserDashboard />,
   },
 ]);
 
