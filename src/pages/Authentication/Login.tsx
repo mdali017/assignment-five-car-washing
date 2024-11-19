@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useUserLoginMutation } from "../../redux/api/api";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState({ type: "", text: "" });
-  const [userLogin, { isLoading, isSuccess, isError, error }] =
-    useUserLoginMutation();
+  const [userLogin, { isLoading }] = useUserLoginMutation();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -16,32 +17,33 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await userLogin(formData);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
+      const response = await userLogin(formData).unwrap(); // Unwrap the response to handle errors properly
+
+      if (response.statusCode === 200) {
+        localStorage.setItem("token", response.data.token);
+        Swal.fire("Success", "Login successful!", "success");
+        navigate("/");
+      }
+    } catch (error: any) {
+      // Capture error and display appropriate message
+      // const errorMessage =
+      //   error?.data?.message || "Login failed! Please check your credentials.";
+      Swal.fire(
+        "Error",
+        "Login failed! Please check your credentials.",
+        "error"
+      );
     }
   };
 
   return (
-    <div className="flex flex-col max-w-md mx-auto p-6 rounded-md sm:p-10 dark:bg-gray-50 dark:text-gray-800">
+    <div className="flex flex-col max-w-md mx-auto p-6 rounded-md border my-16 sm:p-10 dark:bg-gray-50 dark:text-gray-800">
       <div className="mb-8 text-center">
         <h1 className="my-3 text-4xl font-bold">Sign in</h1>
         <p className="text-sm dark:text-gray-600">
           Sign in to access your account
         </p>
       </div>
-      {message.text && (
-        <div
-          className={`mb-4 text-sm p-3 rounded ${
-            message.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="space-y-12">
         <div className="space-y-4">
           <div>
@@ -63,13 +65,6 @@ const Login = () => {
               <label htmlFor="password" className="text-sm">
                 Password
               </label>
-              <a
-                rel="noopener noreferrer"
-                href="#"
-                className="text-xs hover:underline dark:text-gray-600"
-              >
-                Forgot password?
-              </a>
             </div>
             <input
               type="password"
