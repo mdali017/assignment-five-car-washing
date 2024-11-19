@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useUserLoginMutation } from "../../redux/api/api";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -17,17 +17,13 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await userLogin(formData).unwrap(); // Unwrap the response to handle errors properly
-
+      const response = await userLogin(formData).unwrap();
       if (response.statusCode === 200) {
         localStorage.setItem("token", response.data.token);
         Swal.fire("Success", "Login successful!", "success");
         navigate("/");
       }
     } catch (error: any) {
-      // Capture error and display appropriate message
-      // const errorMessage =
-      //   error?.data?.message || "Login failed! Please check your credentials.";
       Swal.fire(
         "Error",
         "Login failed! Please check your credentials.",
@@ -89,13 +85,12 @@ const Login = () => {
           </div>
           <p className="px-6 text-sm text-center dark:text-gray-600">
             Don't have an account yet?
-            <a
-              rel="noopener noreferrer"
-              href="#"
+            <Link
               className="hover:underline dark:text-violet-600"
+              to={"/auth/signup"}
             >
               Sign up
-            </a>
+            </Link>
             .
           </p>
         </div>

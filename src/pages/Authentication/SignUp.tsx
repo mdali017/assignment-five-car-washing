@@ -13,12 +13,8 @@ const SignUp = () => {
     phone: "",
     address: "",
   });
-  const [message, setMessage] = useState({ type: "", text: "" });
-  const [userRegistration, { isLoading, isSuccess, isError }] =
-    useUserRegistrationMutation();
- const navigate = useNavigate();
-
-  //   console.log(formData);
+  const [userRegistration] = useUserRegistrationMutation();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,6 +39,16 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const validationError = validateForm();
+    if (validationError) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: validationError,
+      });
+      return;
+    }
+
     const apiRequestBody = {
       body: {
         name: {
@@ -59,28 +65,21 @@ const SignUp = () => {
     };
 
     try {
-      const response = await userRegistration(apiRequestBody);
-      if (response?.data?.statusCode === 201) {
-         navigate("/")
+      const response = await userRegistration(apiRequestBody).unwrap(); // Use `.unwrap()` to handle errors properly
+      if (response?.statusCode === 200) {
         Swal.fire({
           icon: "success",
           title: "Success",
           text: "Registration successful!",
         });
+        navigate("/");
       }
-
-      console.log(response);
-      setMessage({ type: "success", text: "Registration successful!" });
-    } catch (error) {
-      if (isError) {
-        console.log(error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Registration failed.",
-        });
-      }
-      setMessage({ type: "error", text: "Registration failed." });
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error?.data?.message || "Registration failed.",
+      });
     }
   };
 
@@ -90,17 +89,7 @@ const SignUp = () => {
         <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Sign Up
         </h1>
-        {message.text && (
-          <div
-            className={`mb-4 text-sm p-3 rounded ${
-              message.type === "success"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
+
         <form onSubmit={handleSubmit} className=" grid grid-cols-2 gap-5">
           <div>
             <label htmlFor="firstName" className="block text-gray-600 mb-2">
