@@ -39,45 +39,80 @@ const ServicesPage: React.FC = () => {
       <h1 className="text-5xl font-bold mb-4 text-center my-10">
         Our Services
       </h1>
-      <div className="flex justify-between gap-4 mb-4">
-        <div className="flex gap-4">
-          <input
-            type="text"
-            placeholder="Search services..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border rounded p-2 border-blue-700"
-          />
-          <input
-            type="number"
-            placeholder="Filter by max price"
-            value={filterByPrice}
-            onChange={(e) => setFilterByPrice(e.target.value)}
-            className="border rounded p-2 "
-          />
+      <div className="p-4 bg-white shadow rounded-lg flex flex-col sm:flex-row justify-between gap-4 mb-4">
+        {/* Search and Filter Inputs */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search services..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border rounded w-full pl-10 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-5 h-5 absolute top-2.5 left-3 text-gray-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35"
+              />
+            </svg>
+          </div>
+
+          <div>
+            <input
+              type="number"
+              placeholder="Filter by max price"
+              value={filterByPrice}
+              onChange={(e) => setFilterByPrice(e.target.value)}
+              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+          </div>
         </div>
 
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="border rounded p-2"
-        >
-          <option value="">Sort By</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="duration-asc">Duration: Short to Long</option>
-          <option value="duration-desc">Duration: Long to Short</option>
-        </select>
+        {/* Sort Dropdown */}
+        <div>
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+          >
+            <option value="">Sort By</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="duration-asc">Duration: Short to Long</option>
+            <option value="duration-desc">Duration: Long to Short</option>
+          </select>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
         {filteredServices.map((service: any) => (
           <Link to={`/services/${service._id}`} key={service._id}>
-            <div className="border p-4 rounded shadow-sm">
-              <h2 className="text-xl font-semibold">{service.name}</h2>
-              <p>{service.description}</p>
-              <p>Price: ${service.price}</p>
-              <p>Duration: {service.duration} mins</p>
+            <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-lg">
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                  {service.name}
+                </h2>
+                <p className="text-gray-600 mb-4 line-clamp-3">
+                  {service.description}
+                </p>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-lg font-bold text-blue-600">
+                    ${service.price}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {service.duration} mins
+                  </span>
+                </div>
+              </div>
             </div>
           </Link>
         ))}
