@@ -7,6 +7,9 @@ import Login from "../pages/Authentication/Login";
 import ServicesPage from "../pages/Services/Services";
 import ServiceDetailsPage from "../pages/ServicesDetails/SercicesDetails";
 import UserDashboard from "../pages/Dashboard/UserDashboard/UserDashboard";
+import BookingPage from "../pages/Booking/BookingPage";
+import AdminDashboard from "../pages/Dashboard/AdminDashboard/AdminDashboard";
+import DashboardLayout from "../layout/DashboardLayout";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +28,20 @@ const router = createBrowserRouter([
       {
         path: "/services/:id",
         element: <ServiceDetailsPage />,
+      },
+      {
+        path: "/booking",
+        element: <BookingPage />,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <AdminDashboard />,
       },
     ],
   },
