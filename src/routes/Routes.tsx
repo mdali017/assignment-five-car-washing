@@ -10,6 +10,8 @@ import UserDashboard from "../pages/Dashboard/UserDashboard/UserDashboard";
 import BookingPage from "../pages/Booking/BookingPage";
 import AdminDashboard from "../pages/Dashboard/AdminDashboard/AdminDashboard";
 import DashboardLayout from "../layout/DashboardLayout";
+import AllServices from "../pages/Dashboard/AdminDashboard/Services/AllServices/AllServices";
+import CreateService from "../pages/Dashboard/AdminDashboard/Services/CreateService/CreateService";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +44,14 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <AdminDashboard />,
+      },
+      {
+        path: "/dashboard/all-services",
+        element: <AllServices />,
+      },
+      {
+        path: "/dashboard/create-services",
+        element: <CreateService />,
       },
     ],
   },

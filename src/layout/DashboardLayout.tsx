@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -21,18 +21,18 @@ const sidebaritems = [
   {
     id: 2,
     name: "Services",
-    path: "/services",
+    path: "/dashboard/all-services",
     icon: <LaptopOutlined />,
     children: [
       {
         id: 21,
         name: "Create Service",
-        path: "/services/create-service",
+        path: "/dashboard/create-services",
       },
       {
         id: 22,
         name: "All Services",
-        path: "/services/all-services",
+        path: "/dashboard/all-services",
       },
     ],
   },
@@ -96,10 +96,10 @@ const sidebaritems = [
 const sidebarMenuItems: MenuProps["items"] = sidebaritems.map((item) => ({
   key: item.path, // Use path as key
   icon: item.icon,
-  label: item.name,
+  label: <Link to={item.path}>{item.name}</Link>, // Use Link for navigation
   children: item.children?.map((child) => ({
     key: child.path,
-    label: child.name,
+    label: <Link to={child.path}>{child.name}</Link>, // Use Link for child items
   })),
 }));
 
