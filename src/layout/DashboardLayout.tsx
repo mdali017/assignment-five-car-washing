@@ -39,18 +39,18 @@ const sidebaritems = [
   {
     id: 3,
     name: "Slot ",
-    path: "/slots",
+    path: "/dashboard/all-slots",
     icon: <NotificationOutlined />,
     children: [
       {
         id: 31,
         name: "Create Slot",
-        path: "/slots/create-slot",
+        path: "/dashboard/create-slots",
       },
       {
         id: 32,
         name: "All Slots",
-        path: "/slots/all-slots",
+        path: "/dashboard/all-slots",
       },
     ],
   },

@@ -12,6 +12,8 @@ import AdminDashboard from "../pages/Dashboard/AdminDashboard/AdminDashboard";
 import DashboardLayout from "../layout/DashboardLayout";
 import AllServices from "../pages/Dashboard/AdminDashboard/Services/AllServices/AllServices";
 import CreateService from "../pages/Dashboard/AdminDashboard/Services/CreateService/CreateService";
+import AllSlots from "../pages/Dashboard/AdminDashboard/Slots/AllSlots/AllSlots";
+import CreateSlot from "../pages/Dashboard/AdminDashboard/Slots/CreateSlot/CreateSlot";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,14 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/create-services",
         element: <CreateService />,
+      },
+      {
+        path: "/dashboard/all-slots",
+        element: <AllSlots />,
+      },
+      {
+        path: "/dashboard/create-slots",
+        element: <CreateSlot />,
       },
     ],
   },

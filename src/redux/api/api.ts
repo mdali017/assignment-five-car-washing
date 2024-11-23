@@ -39,7 +39,18 @@ export const baseApi = createApi({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token, // Authorization header includes the token
+          Authorization: token,
+        },
+        body: data,
+      }),
+    }),
+    createServiceSlot: builder.mutation({
+      query: ({ data, token }): any => ({
+        url: "/api/services/slots",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
         },
         body: data,
       }),
@@ -67,4 +78,5 @@ export const {
   useUserLoginMutation,
   useGetSlotAvailabilityQuery,
   useCreateServicesMutation,
+  useCreateServiceSlotMutation
 } = baseApi;

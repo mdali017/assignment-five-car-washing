@@ -4,49 +4,35 @@ import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import { useGetAllServicesQuery } from "../../../../../redux/api/api";
 
 const { Title, Text } = Typography;
 
-interface DataType {
+interface ServiceDataType {
   key: string;
   name: string;
-  age: number;
-  address: string;
+  price: number;
+  duration: string;
 }
 
-type DataIndex = keyof DataType;
-
-const data: DataType[] = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-];
+type DataIndex = keyof ServiceDataType;
 
 const AllServices: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
+
+  // Fetching data from API
+  const { data: apiData, isLoading, isError } = useGetAllServicesQuery(undefined);
+
+  // Mapping API data to table data
+  const servicesData: ServiceDataType[] =
+    apiData?.data.map((service: any) => ({
+      key: service._id,
+      name: service.name,
+      price: service.price,
+      duration: service.duration,
+    })) || [];
 
   const handleSearch = (
     selectedKeys: string[],
@@ -65,7 +51,7 @@ const AllServices: React.FC = () => {
 
   const getColumnSearchProps = (
     dataIndex: DataIndex
-  ): TableColumnType<DataType> => ({
+  ): TableColumnType<ServiceDataType> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -154,7 +140,7 @@ const AllServices: React.FC = () => {
       ),
   });
 
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<ServiceDataType> = [
     {
       title: "Service Name",
       dataIndex: "name",
@@ -163,26 +149,35 @@ const AllServices: React.FC = () => {
       ...getColumnSearchProps("name"),
     },
     {
-      title: "Services Duration",
-      dataIndex: "age",
-      key: "age",
+      title: "Service Price",
+      dataIndex: "price",
+      key: "price",
       width: "20%",
-      ...getColumnSearchProps("age"),
+      sorter: (a, b) => a.price - b.price,
+      ...getColumnSearchProps("price"),
     },
     {
-      title: "Service Price",
-      dataIndex: "address",
-      key: "address",
-      ...getColumnSearchProps("address"),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortDirections: ["descend", "ascend"],
+      title: "Service Duration (mins)",
+      dataIndex: "duration",
+      key: "duration",
+      sorter: (a, b) => parseInt(a.duration) - parseInt(b.duration),
     },
     {
       title: "Actions",
-      dataIndex: "address",
-      key: "address",
+      key: "actions",
+      render: (_, record) => (
+        <Space>
+          <Button type="link">Edit</Button>
+          <Button type="link" danger>
+            Delete
+          </Button>
+        </Space>
+      ),
     },
   ];
+
+  if (isLoading) return <Text>Loading...</Text>;
+  if (isError) return <Text type="danger">Failed to load services</Text>;
 
   return (
     <div>
@@ -195,7 +190,11 @@ const AllServices: React.FC = () => {
       >
         Manage your services
       </Text>
-      <Table<DataType> columns={columns} dataSource={data} />
+      <Table<ServiceDataType>
+        columns={columns}
+        dataSource={servicesData}
+        rowKey="key"
+      />
     </div>
   );
 };
