@@ -1,25 +1,36 @@
 import React from "react";
 import { Form, Input, Button, Typography, Row, Col } from "antd";
 import { useCreateServicesMutation } from "../../../../../redux/api/api";
+import Swal from "sweetalert2";
 
 const { Title, Text } = Typography;
 
 const ProfileForm: React.FC = () => {
   const token = localStorage.getItem("token"); // Get token from localStorage
-  const [createServices, { isLoading }] = useCreateServicesMutation();
+  const [createServices, { isLoading, isError, error }] =
+    useCreateServicesMutation();
 
-  const handleSubmit = (values: any) => {
-    console.log("Form Submitted: ", values);
-    // Mapping the form values to match the req.body format
+  const handleSubmit = async (values: any) => {
     const formattedValues = {
       name: values.name,
       description: values.description,
       price: values.price,
       duration: values.duration,
-      isDeleted: false, // Set isDeleted to false as per your request body
+      isDeleted: false,
     };
-    // Passing the token in the second argument to the mutation
-    createServices({ data: formattedValues, token: `Bearer ${token}` });
+    try {
+      const response = await createServices({
+        data: formattedValues,
+        token: `Bearer ${token}`,
+      }).unwrap();
+      console.log("Service created successfully:", response);
+      if (response.statusCode === 200) {
+        Swal.fire("Success", "Service created successfully!", "success");
+      }
+    } catch (err) {
+      console.error("Error creating service:", err);
+      Swal.fire("Error", "Failed to create service", "error");
+    }
   };
 
   return (
@@ -37,7 +48,11 @@ const ProfileForm: React.FC = () => {
       <Text type="secondary" style={{ display: "block", textAlign: "center" }}>
         Adipisci fuga autem eum!
       </Text>
-      <Form layout="vertical" onFinish={handleSubmit} style={{ marginTop: "24px" }}>
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit}
+        style={{ marginTop: "24px" }}
+      >
         <Row gutter={16}>
           <Col xs={24} sm={12}>
             <Form.Item
@@ -45,7 +60,10 @@ const ProfileForm: React.FC = () => {
               name="name"
               rules={[
                 { required: true, message: "Service Name is required" },
-                { min: 3, message: "Service Name must be at least 3 characters" },
+                {
+                  min: 3,
+                  message: "Service Name must be at least 3 characters",
+                },
               ]}
             >
               <Input placeholder="Enter Service Name" />
@@ -55,10 +73,12 @@ const ProfileForm: React.FC = () => {
             <Form.Item
               label="Duration (minutes)"
               name="duration"
-              rules={[
-                // { required: true, message: "Duration is required" },
-                // { type: "number", message: "Duration must be a number" },
-              ]}
+              rules={
+                [
+                  // { required: true, message: "Duration is required" },
+                  // { type: "number", message: "Duration must be a number" },
+                ]
+              }
             >
               <Input placeholder="Enter Service Duration" type="number" />
             </Form.Item>
@@ -67,10 +87,12 @@ const ProfileForm: React.FC = () => {
             <Form.Item
               label="Price"
               name="price"
-              rules={[
-                // { required: true, message: "Price is required" },
-                // { type: "number", message: "Price must be a number" },
-              ]}
+              rules={
+                [
+                  // { required: true, message: "Price is required" },
+                  // { type: "number", message: "Price must be a number" },
+                ]
+              }
             >
               <Input placeholder="Enter Service Price" type="number" />
             </Form.Item>
@@ -81,7 +103,10 @@ const ProfileForm: React.FC = () => {
               name="description"
               rules={[
                 { required: true, message: "Description is required" },
-                { max: 200, message: "Description cannot exceed 200 characters" },
+                {
+                  max: 200,
+                  message: "Description cannot exceed 200 characters",
+                },
               ]}
             >
               <Input.TextArea rows={4} placeholder="Service Description" />
