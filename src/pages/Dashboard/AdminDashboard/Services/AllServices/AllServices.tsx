@@ -165,7 +165,7 @@ const AllServices: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
+      render: (_) => (
         <Space>
           <Button type="link">Edit</Button>
           <Button type="link" danger>

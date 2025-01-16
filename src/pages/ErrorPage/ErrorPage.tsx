@@ -1,6 +1,6 @@
 import React from "react";
 
-const ErrorPage = () => {
+const ErrorPage: React.FC = () => {
   return (
     <div>
       <section className="flex items-center h-full p-16 dark:bg-gray-50 dark:text-gray-800">

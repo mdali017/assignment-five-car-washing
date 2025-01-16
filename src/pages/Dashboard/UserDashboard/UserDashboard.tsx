@@ -10,7 +10,7 @@ interface Booking {
 }
 
 const UserDashboard = () => {
-  const [bookings, setBookings] = useState<Booking[]>([
+  const [bookings, ] = useState<Booking[]>([
     // Mock Data: Replace with API fetch
     {
       id: "1",
@@ -30,7 +30,7 @@ const UserDashboard = () => {
     },
   ]);
 
-  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [, setTimeLeft] = useState<string | null>(null);
 
   useEffect(() => {
     // Calculate countdown for the next upcoming booking

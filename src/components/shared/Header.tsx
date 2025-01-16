@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
-const Header = () => {
+const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -40,7 +40,9 @@ const Header = () => {
         {/* Sign In/Sign Up */}
         <div className="hidden lg:flex items-center gap-2">
           <Link to={"/auth/login"}>
-            <button className="self-center px-4 py-2 border uppercase font-semibold rounded hover:bg-violet-600 duration-300 hover:text-white hover:border-none">Login</button>
+            <button className="self-center px-4 py-2 border uppercase font-semibold rounded hover:bg-violet-600 duration-300 hover:text-white hover:border-none">
+              Login
+            </button>
           </Link>
           <button className="self-center text-white hover:text-black px-4 py-2 uppercase font-semibold rounded bg-violet-600 hover:bg-transparent duration-300 hover:border ">
             Book Now

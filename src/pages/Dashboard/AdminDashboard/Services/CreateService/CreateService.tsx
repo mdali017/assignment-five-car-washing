@@ -7,7 +7,7 @@ const { Title, Text } = Typography;
 
 const ProfileForm: React.FC = () => {
   const token = localStorage.getItem("token"); // Get token from localStorage
-  const [createServices, { isLoading, isError, error }] =
+  const [createServices, { isLoading }] =
     useCreateServicesMutation();
 
   const handleSubmit = async (values: any) => {
