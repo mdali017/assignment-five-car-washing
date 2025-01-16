@@ -55,6 +55,22 @@ export const baseApi = createApi({
         body: data,
       }),
     }),
+    getAllAvailableSlots: builder.query({
+      query: ({ payload }) => ({
+        url: "/api/slots/availability",
+        method: "GET",
+        params: {
+          date: payload.date,
+          serviceId: payload.serviceId,
+        },
+      }),
+    }),
+    getAllSlots: builder.query({
+      query: () => ({
+        url: "/api/all-slots",
+        method: "GET",
+      }),
+    }),
     userRegistration: builder.mutation({
       query: (data) => ({
         url: "/api/auth/signup",
@@ -78,5 +94,7 @@ export const {
   useUserLoginMutation,
   useGetSlotAvailabilityQuery,
   useCreateServicesMutation,
-  useCreateServiceSlotMutation
+  useCreateServiceSlotMutation,
+  useGetAllAvailableSlotsQuery,
+  useGetAllSlotsQuery,
 } = baseApi;

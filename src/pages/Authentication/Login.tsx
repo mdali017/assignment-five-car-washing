@@ -19,7 +19,7 @@ const Login = () => {
     try {
       const response = await userLogin(formData).unwrap();
       if (response.statusCode === 200) {
-        navigate("/dashboard");
+        navigate("/dashboard", { state: { userData: response } });
         localStorage.setItem("token", response.data.token);
         Swal.fire("Success", "Login successful!", "success");
       }

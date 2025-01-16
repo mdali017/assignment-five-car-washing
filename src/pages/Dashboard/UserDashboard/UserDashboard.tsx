@@ -63,25 +63,25 @@ const UserDashboard = () => {
       <h1 className="text-3xl font-bold mb-6">User Dashboard</h1>
 
       {/* Profile Section */}
-      <div className="border p-4 rounded-md shadow-md mb-6">
+      {/* <div className="border p-4 rounded-md shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
         <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
           Update Profile
         </button>
-      </div>
+      </div> */}
 
       {/* Countdown Timer */}
-      {timeLeft && (
+      {/* {timeLeft && (
         <div className="bg-blue-100 border border-blue-300 p-4 rounded-md mb-6">
           <h2 className="text-lg font-semibold">
             Time Until Next Booking:{" "}
             <span className="text-blue-600 font-bold">{timeLeft}</span>
           </h2>
         </div>
-      )}
+      )} */}
 
       {/* Past Bookings */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h2 className="text-xl font-semibold mb-4">Past Bookings</h2>
         <table className="w-full border-collapse border border-gray-300">
           <thead>
@@ -105,10 +105,10 @@ const UserDashboard = () => {
               ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
 
       {/* Upcoming Bookings */}
-      <div>
+      {/* <div>
         <h2 className="text-xl font-semibold mb-4">Upcoming Bookings</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {bookings
@@ -129,7 +129,7 @@ const UserDashboard = () => {
               </div>
             ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

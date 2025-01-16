@@ -14,7 +14,7 @@ const HeroSection = () => {
           {/* Logo */}
           <div className="flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-orange-500 rounded-full"></div>
-            <span className="text-gray-700">Wardiere Inc.</span>
+            <span className="text-gray-700">Magnetic Codes.</span>
           </div>
 
           {/* Main Heading */}

@@ -2,11 +2,13 @@ import React from "react";
 import {
   DashboardOutlined,
   LaptopOutlined,
+  LogoutOutlined,
   NotificationOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Layout, Menu, theme } from "antd";
-import { Link, Outlet } from "react-router-dom";
+import { Avatar, Dropdown, Layout, Menu, theme } from "antd";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -15,77 +17,77 @@ const sidebaritems = [
   {
     id: 1,
     name: "Dashboard",
-    path: "/dashboard",
+    path: "/user_dashboard",
     icon: <DashboardOutlined />,
   },
   {
     id: 2,
-    name: "Services",
+    name: "Past Bookings",
     path: "/dashboard/all-services",
     icon: <LaptopOutlined />,
-    children: [
-      {
-        id: 21,
-        name: "Create Service",
-        path: "/dashboard/create-services",
-      },
-      {
-        id: 22,
-        name: "All Services",
-        path: "/dashboard/all-services",
-      },
-    ],
+    // children: [
+    //   {
+    //     id: 21,
+    //     name: "Create Service",
+    //     path: "/dashboard/create-services",
+    //   },
+    //   {
+    //     id: 22,
+    //     name: "All Services",
+    //     path: "/dashboard/all-services",
+    //   },
+    // ],
   },
   {
     id: 3,
-    name: "Slot ",
+    name: "Upcoming Bookings",
     path: "/dashboard/all-slots",
     icon: <NotificationOutlined />,
-    children: [
-      {
-        id: 31,
-        name: "Create Slot",
-        path: "/dashboard/create-slots",
-      },
-      {
-        id: 32,
-        name: "All Slots",
-        path: "/dashboard/all-slots",
-      },
-    ],
+    // children: [
+    //   {
+    //     id: 31,
+    //     name: "Create Slot",
+    //     path: "/dashboard/create-slots",
+    //   },
+    //   {
+    //     id: 32,
+    //     name: "All Slots",
+    //     path: "/dashboard/all-slots",
+    //   },
+    // ],
   },
+  //   {
+  //     id: 4,
+  //     name: "Bookings",
+  //     path: "/notifications",
+  //     icon: <NotificationOutlined />,
+  //     children: [
+  //       {
+  //         id: 31,
+  //         name: "Messages",
+  //         path: "/notifications/messages",
+  //       },
+  //       {
+  //         id: 32,
+  //         name: "Alerts",
+  //         path: "/notifications/alerts",
+  //       },
+  //     ],
+  //   },
   {
     id: 4,
-    name: "Bookings",
-    path: "/notifications",
-    icon: <NotificationOutlined />,
-    children: [
-      {
-        id: 31,
-        name: "Messages",
-        path: "/notifications/messages",
-      },
-      {
-        id: 32,
-        name: "Alerts",
-        path: "/notifications/alerts",
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "Users",
+    name: "Reviews ",
     path: "/users",
     icon: <NotificationOutlined />,
     children: [
       {
         id: 31,
-        name: "Create User",
+        name: "Create Review",
         path: "/users/create-user",
       },
       {
         id: 32,
-        name: "All Users",
+        name: "All Reviews",
         path: "/users/all-users",
       },
     ],
@@ -103,10 +105,27 @@ const sidebarMenuItems: MenuProps["items"] = sidebaritems.map((item) => ({
   })),
 }));
 
-const DashboardLayout: React.FC = () => {
+const UserDashboardLayout: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const location = useLocation();
+  console.log(location);
+
+  // Dropdown menu for avatar
+  const userMenu: MenuProps["items"] = [
+    {
+      key: "1",
+      label: "Profile",
+      icon: <UserOutlined />,
+    },
+    {
+      key: "2",
+      label: "Logout",
+      icon: <LogoutOutlined />,
+    },
+  ];
 
   return (
     <Layout>
@@ -123,8 +142,23 @@ const DashboardLayout: React.FC = () => {
           ]}
           style={{ flex: 1, minWidth: 0 }}
         />
+        <div className="flex items-center gap-4">
+          <Dropdown menu={{ items: userMenu }} trigger={["click"]}>
+            <Avatar
+              size="large"
+              icon={<UserOutlined />}
+              style={{ cursor: "pointer", backgroundColor: "#1890ff" }}
+            />
+          </Dropdown>
+          <div className="text-white flex flex-col">
+            <p className="font-semibold text-sm border-b border-gray-500 pb-1">
+              Md. Ali Hasan
+            </p>
+            <p className="text-xs text-gray-300">User</p>
+          </div>
+        </div>
       </Header>
-      <Content className="min-h-[80vh]" style={{ padding: "0 48px" }}>
+      <Content className="min-h-[80vh]" style={{ padding: "0 " }}>
         <Layout
           style={{
             padding: "24px 0",
@@ -147,10 +181,10 @@ const DashboardLayout: React.FC = () => {
         </Layout>
       </Content>
       <Footer style={{ textAlign: "center" }}>
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        Magnetic Codes ©{new Date().getFullYear()} Created by Mohabbat
       </Footer>
     </Layout>
   );
 };
 
-export default DashboardLayout;
+export default UserDashboardLayout;
