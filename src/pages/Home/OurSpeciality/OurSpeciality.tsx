@@ -1,42 +1,43 @@
-const OurSpeciality = () => {
+import React from "react";
+
+const OurSpeciality: React.FC = () => {
   return (
     <div>
       <div className="container mx-auto my-12">
         <div className="grid md:grid-cols-2 gap-8 bg-white shadow-lg rounded-lg p-6">
           <div>
             <h1 className="text-blue-700 text-3xl font-bold mb-4 whitespace-nowrap ">
-              Patheon® and the Power of POS Car Wash Software Scalability
+              Revolutionize Your Car Wash Business with Advanced POS Solutions
             </h1>
             <p className="text-gray-700 mb-4">
-              Car wash POS system scalability is vital to owners and investors.
-              Increased competition, technological evolution, and rising
-              customer expectations require a solution to help you navigate
-              these challenges.
+              Managing a car wash business requires more than just keeping cars
+              clean. With evolving customer demands and intense competition,
+              having a robust POS system is essential to stand out and succeed.
             </p>
             <p className="text-gray-700 mb-4">
-              Enter Patheon, the POS solution that’s so much more. Beyond
-              handling unlimited plans and payments, Patheon:
+              Discover how our cutting-edge car wash POS system can help you:
             </p>
             <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-              <li>Unlocks insights</li>
-              <li>Influences actions</li>
-              <li>Optimizes your business</li>
-              <li>Elevates the user experience</li>
+              <li>Streamline daily operations</li>
+              <li>Track and manage unlimited memberships</li>
+              <li>Enhance customer loyalty with tailored promotions</li>
+              <li>Gain actionable insights to boost profits</li>
+              <li>Provide a seamless payment experience</li>
             </ul>
             <p className="text-gray-700 mb-6">
-              By addressing what you value as a business owner, Patheon
-              transforms your operations and changes how employees and customers
-              feel about your brand.
+              Whether you're managing a single location or expanding your car
+              wash business, our POS solution adapts to your needs and ensures
+              your success.
             </p>
             <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded font-bold">
-              Peek at Patheon
+              Explore Our POS System
             </button>
           </div>
 
           <div className="mt-12">
             <img
               src="https://drb.com/getmedia/e6168879-a1f9-4b43-ad79-0e4afda12bcd/pos_car_wash_software_scalability.png"
-              alt="Car Wash"
+              alt="Car Wash POS System"
               className="rounded-lg shadow"
             />
           </div>
