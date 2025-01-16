@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaArrowAltCircleRight, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 interface Review {
@@ -41,28 +41,16 @@ const ReviewSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
     reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length ||
     0;
 
-  const handleLoginRedirect = () => navigate("/login");
-
   return (
     <div className="relative bg-gray-100 py-10">
-      {!isLoggedIn && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <button
-            onClick={handleLoginRedirect}
-            className="bg-white text-black px-6 py-2 rounded-md font-semibold hover:bg-gray-200"
-          >
-            Login to Leave a Review
-          </button>
-        </div>
-      )}
       <div
         className={`container mx-auto px-4 ${
           !isLoggedIn ? "opacity-30" : "opacity-100"
         }`}
       >
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Leave a Review
-        </h2>
+        {/* <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Show All Reviews
+        </h2> */}
         <div className="bg-white shadow-lg rounded-lg p-6">
           <div className="flex items-center mb-4">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -97,9 +85,20 @@ const ReviewSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
           </button>
         </div>
         <div className="mt-8">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-            Overall Rating: {averageRating.toFixed(1)}
-          </h3>
+          <div className="flex justify-between items-center bg-gray-50 p-4 rounded-md shadow-sm">
+            <h3 className="text-2xl font-semibold text-gray-800">
+              Overall Rating:{" "}
+              <span className="text-yellow-500">
+                {averageRating.toFixed(1)}
+              </span>
+            </h3>
+            <button
+              onClick={() => navigate("/reviews")}
+              className="flex items-center gap-2 text-blue-500 font-medium hover:text-blue-600 transition"
+            >
+              See All Reviews <FaArrowAltCircleRight size={20} />
+            </button>
+          </div>
           <div className="space-y-4">
             {reviews.slice(0, 2).map((review, index) => (
               <div key={index} className="bg-white shadow-lg rounded-lg p-4">
@@ -120,12 +119,6 @@ const ReviewSection = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
               </div>
             ))}
           </div>
-          <button
-            onClick={() => navigate("/reviews")}
-            className="mt-4 bg-gray-800 text-white px-6 py-2 rounded-md font-semibold hover:bg-gray-900"
-          >
-            See All Reviews
-          </button>
         </div>
       </div>
     </div>

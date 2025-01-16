@@ -5,7 +5,7 @@ import { FaClock, FaDollarSign } from "react-icons/fa";
 const FeaturedServices = () => {
   const { data: servicesData = [] } = useGetAllServicesQuery(undefined);
 
-  console.log(servicesData);
+  // console.log(servicesData);
 
   return (
     <div className="bg-gray-100 py-10">
@@ -14,7 +14,7 @@ const FeaturedServices = () => {
           Featured Services
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {servicesData?.data?.map((service: any) => (
+          {servicesData?.data?.slice(0, 6)?.map((service: any) => (
             <Link key={service._id} to={`/services/${service._id}`}>
               <div
                 key={service._id}

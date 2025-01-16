@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const HeroSection: React.FC = () => {
   const services = [
@@ -40,9 +41,11 @@ const HeroSection: React.FC = () => {
 
           {/* Book Now Button */}
           <div className="relative mb-12">
-            <button className="bg-orange-500 text-white px-8 py-3 clip-path-arrow hover:bg-orange-600 transition-colors">
-              BOOK NOW
-            </button>
+            <Link to={"/services"}>
+              <button className="bg-orange-500 text-white px-8 py-3 clip-path-arrow hover:bg-orange-600 transition-colors">
+                BOOK NOW
+              </button>
+            </Link>
           </div>
 
           {/* Contact Info */}

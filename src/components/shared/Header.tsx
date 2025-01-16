@@ -13,6 +13,7 @@ const Header: React.FC = () => {
     { name: "Home", path: "/" },
     { name: "Services", path: "/services" },
     { name: "Bookings", path: "/bookings" },
+    { name: "Reviews", path: "/reviews" },
     { name: "Contact", path: "/contact" },
   ];
 
@@ -44,9 +45,11 @@ const Header: React.FC = () => {
               Login
             </button>
           </Link>
-          <button className="self-center text-white hover:text-black px-4 py-2 uppercase font-semibold rounded bg-violet-600 hover:bg-transparent duration-300 hover:border ">
-            Book Now
-          </button>
+          <Link to={"/services"}>
+            <button className="self-center text-white hover:text-black px-4 py-2 uppercase font-semibold rounded bg-violet-600 hover:bg-transparent duration-300 hover:border ">
+              Book Now
+            </button>
+          </Link>
         </div>
 
         {/* Mobile Menu Toggle */}

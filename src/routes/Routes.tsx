@@ -15,6 +15,7 @@ import AllSlots from "../pages/Dashboard/AdminDashboard/Slots/AllSlots/AllSlots"
 import CreateSlot from "../pages/Dashboard/AdminDashboard/Slots/CreateSlot/CreateSlot";
 import AdminDashboardLayout from "../layout/AdminDashboardLayout";
 import UserDashboardLayout from "../layout/UserDashboardLayout";
+import Reviews from "../pages/Reviews/Reviews";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "/booking",
         element: <BookingPage />,
+      },
+      {
+        path: "/reviews",
+        element: <Reviews />,
       },
     ],
   },
