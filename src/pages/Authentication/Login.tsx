@@ -3,27 +3,35 @@ import { useUserLoginMutation } from "../../redux/api/api";
 import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [userLogin, { isLoading }] = useUserLoginMutation();
   const navigate = useNavigate();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     try {
       const response = await userLogin(formData).unwrap();
       if (response.statusCode === 200) {
-        navigate("/dashboard", { state: { userData: response } });
-        localStorage.setItem("token", response.data.token);
+        const carWash = {
+          user: response?.data?.user,
+          token: response?.data?.token,
+        };
+        localStorage.setItem("carWash", JSON.stringify(carWash));
+        if (response?.data?.user?.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
         Swal.fire("Success", "Login successful!", "success");
       }
-    } catch (error: any) {
+    } catch (error) {
       Swal.fire(
         "Error",
         "Login failed! Please check your credentials.",
@@ -33,68 +41,101 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col max-w-md mx-auto p-6 rounded-md border my-16 sm:p-10 dark:bg-gray-50 dark:text-gray-800">
-      <div className="mb-8 text-center">
-        <h1 className="my-3 text-4xl font-bold">Sign in</h1>
-        <p className="text-sm dark:text-gray-600">
-          Sign in to access your account
-        </p>
-      </div>
-      <form onSubmit={handleSubmit} className="space-y-12">
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block mb-2 text-sm">
-              Email address
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="leroy@jenkins.com"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
-            />
-          </div>
-          <div>
-            <div className="flex justify-between mb-2">
-              <label htmlFor="password" className="text-sm">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-700">
+      <div className="max-w-lg w-full bg-white rounded-lg shadow-lg dark:bg-gray-800">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-4">
+            Welcome Back
+          </h1>
+          <p className="text-sm text-center text-gray-500 dark:text-gray-400 mb-6">
+            Sign in to access your account
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="example@domain.com"
+                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-violet-500 focus:border-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Password
               </label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="••••••••"
+                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-violet-500 focus:border-violet-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+              />
             </div>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="*****"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800"
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <div>
+
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full px-8 py-3 font-semibold rounded-md dark:bg-violet-600 dark:text-gray-50"
+              className="w-full py-3 text-white font-semibold bg-violet-600 rounded-lg hover:bg-violet-700 focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 focus:outline-none dark:ring-offset-gray-800"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Signing in..." : "Sign In"}
             </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?
+              <Link
+                to="/auth/signup"
+                className="text-violet-600 hover:underline ml-1"
+              >
+                Sign up here
+              </Link>
+            </p>
           </div>
-          <p className="px-6 text-sm text-center dark:text-gray-600">
-            Don't have an account yet?
-            <Link
-              className="hover:underline dark:text-violet-600"
-              to={"/auth/signup"}
-            >
-              Sign up
-            </Link>
-            .
-          </p>
         </div>
-      </form>
+
+        <div className="border-t border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between">
+            <div className="text-center mb-4 sm:mb-0">
+              <h3 className="font-medium text-gray-800 dark:text-gray-100">
+                Admin Credentials
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="font-medium">Email:</span> info@gmail.com
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="font-medium">Password:</span> 123456
+              </p>
+            </div>
+            <div className="text-center">
+              <h3 className="font-medium text-gray-800 dark:text-gray-100">
+                User Credentials
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="font-medium">Email:</span> info_01@gmail.com
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="font-medium">Password:</span> 123456
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

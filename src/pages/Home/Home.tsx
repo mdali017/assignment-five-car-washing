@@ -9,7 +9,7 @@ const Home = () => {
       <HeroSection />
       <OurSpeciality />
       <FeaturedServices />
-      <ReviewSection isLoggedIn />
+      <ReviewSection />
     </div>
   );
 };
