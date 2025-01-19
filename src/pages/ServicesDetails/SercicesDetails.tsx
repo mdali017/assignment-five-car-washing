@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { useGetSlotAvailabilityQuery } from "../../redux/api/api";
 
@@ -20,8 +20,11 @@ interface TimeSlot {
 }
 
 const ServiceDetailsPage = () => {
-  const { id } = useParams<{ id?: string }>(); // Allow `id` to be optional
-  const serviceId = id || null; // Convert `undefined` to `null`
+  const { id } = useParams<{ id?: string }>();
+  const serviceId = id || null;
+  const location = useLocation();
+  const service = location.state as Service;
+  // console.log(service)
 
   const [selectedDate, setSelectedDate] = useState<string>(
     format(new Date(), "yyyy-MM-dd")
@@ -35,9 +38,12 @@ const ServiceDetailsPage = () => {
       serviceId, // Pass the processed `serviceId` here
     });
 
-  const serviceDetails: Service | null =
-    dataavailableSlots?.data?.[0]?.service || null;
-  const timeSlots: TimeSlot[] = dataavailableSlots?.data || [];
+  console.log(dataavailableSlots);
+  const availableTimeSlots = dataavailableSlots?.data;
+
+  const serviceDetails: Service | null = service || null;
+
+  // console.log(serviceDetails)
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
@@ -122,9 +128,9 @@ const ServiceDetailsPage = () => {
             <h2 className="text-2xl font-bold text-blue-600 mb-6">
               Available Time Slots
             </h2>
-            {timeSlots.length > 0 ? (
+            {availableTimeSlots?.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                {timeSlots.map((slot) => (
+                {availableTimeSlots?.map((slot: any) => (
                   <button
                     key={slot._id}
                     onClick={() => handleSlotSelect(slot)}

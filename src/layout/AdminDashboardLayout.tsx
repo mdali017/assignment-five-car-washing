@@ -28,13 +28,13 @@ const sidebaritems = [
     children: [
       {
         id: 21,
-        name: "Create Service",
-        path: "/dashboard/create-services",
+        name: "All Services",
+        path: "/dashboard/all-services",
       },
       {
         id: 22,
-        name: "All Services",
-        path: "/dashboard/all-services",
+        name: "Create Service",
+        path: "/dashboard/create-services",
       },
     ],
   },
@@ -171,11 +171,11 @@ const AdminDashboardLayout: React.FC = () => {
               mode="inline"
               defaultSelectedKeys={["/dashboard"]}
               defaultOpenKeys={["/settings"]}
-              style={{ height: "100%", fontSize: "16px", fontWeight: "bold" }}
+              style={{ height: "100%",  }}
               items={sidebarMenuItems}
             />
           </Sider>
-          <Content style={{ padding: "0 24px", minHeight: 280 }}>
+          <Content style={{ padding: "0 24px", minHeight: 480 }}>
             <Outlet />
           </Content>
         </Layout>

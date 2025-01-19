@@ -39,50 +39,49 @@ const ServicesPage: React.FC = () => {
       <h1 className="text-5xl font-bold mb-4 text-center my-10">
         Our Services
       </h1>
-      <div className="p-4 bg-white shadow rounded-lg flex flex-col sm:flex-row justify-between gap-4 mb-4">
-        {/* Search and Filter Inputs */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search services..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border rounded w-full pl-10 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+      <div className="p-6 bg-white shadow-md rounded-lg flex flex-col sm:flex-row items-center justify-between gap-6 mb-6">
+        {/* Search Input */}
+        <div className="flex items-center relative w-full sm:w-1/3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            stroke="currentColor"
+            className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35"
             />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="w-5 h-5 absolute top-2.5 left-3 text-gray-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35"
-              />
-            </svg>
-          </div>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search services..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 pr-4 py-2 w-full border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-          <div>
-            <input
-              type="number"
-              placeholder="Filter by max price"
-              value={filterByPrice}
-              onChange={(e) => setFilterByPrice(e.target.value)}
-              className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-          </div>
+        {/* Price Filter */}
+        <div className="w-full sm:w-1/3">
+          <input
+            type="number"
+            placeholder="Filter by max price"
+            value={filterByPrice}
+            onChange={(e) => setFilterByPrice(e.target.value)}
+            className="w-full py-2 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         {/* Sort Dropdown */}
-        <div>
+        <div className="w-full sm:w-1/3">
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full py-2 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Sort By</option>
             <option value="price-asc">Price: Low to High</option>
@@ -95,7 +94,7 @@ const ServicesPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
         {filteredServices.map((service: any) => (
-          <Link to={`/services/${service._id}`} key={service._id}>
+          <Link to={`/services/${service._id}`} key={service._id} state={service}>
             <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-lg">
               <div className="p-4">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">

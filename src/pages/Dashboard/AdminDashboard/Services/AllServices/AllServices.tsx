@@ -4,13 +4,20 @@ import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
-import { useGetAllServicesQuery } from "../../../../../redux/api/api";
+import {
+  useDeleteServiceMutation,
+  useGetAllServicesQuery,
+} from "../../../../../redux/api/api";
+import AddServicesModal from "../../../../../components/common/AddServiceModal";
+import EditServiceModal from "../../../../../components/common/EditServiceModal";
+import Swal from "sweetalert2";
 
 const { Title, Text } = Typography;
 
 interface ServiceDataType {
   key: string;
   name: string;
+  image: string;
   price: number;
   duration: string;
 }
@@ -21,15 +28,27 @@ const AllServices: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
+  const [addServiceModalOpen, setAddServiceModalOpen] = useState(false);
+  const [updateServiceModalOpen, setUpdateServiceModalOpen] = useState(false);
+  const [selectedService, setSelectedService] =
+    useState<ServiceDataType | null>(null);
+
+  const [deleteService] = useDeleteServiceMutation();
 
   // Fetching data from API
-  const { data: apiData, isLoading, isError } = useGetAllServicesQuery(undefined);
+  const {
+    data: apiData,
+    isLoading,
+    refetch: refetchServices,
+    isError,
+  } = useGetAllServicesQuery(undefined);
 
   // Mapping API data to table data
   const servicesData: ServiceDataType[] =
-    apiData?.data.map((service: any) => ({
+    apiData?.data?.map((service: any) => ({
       key: service._id,
       name: service.name,
+      image: service.image,
       price: service.price,
       duration: service.duration,
     })) || [];
@@ -47,6 +66,36 @@ const AllServices: React.FC = () => {
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
     setSearchText("");
+  };
+
+  const handleServiceDelete = (id: any) => {
+    console.log("delete", id);
+
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteService(id);
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+          }).then(() => {
+            refetchServices();
+          });
+        }
+      });
+    } catch (error) {
+      console.log("Error deleting service:", error);
+      Swal.fire("Error", "Failed to delete service", "error");
+    }
   };
 
   const getColumnSearchProps = (
@@ -142,6 +191,14 @@ const AllServices: React.FC = () => {
 
   const columns: TableColumnsType<ServiceDataType> = [
     {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => (
+        <img src={image} alt="Service" style={{ width: 50, height: 50 }} />
+      ),
+    },
+    {
       title: "Service Name",
       dataIndex: "name",
       key: "name",
@@ -165,10 +222,22 @@ const AllServices: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_) => (
+      render: (_, record) => (
         <Space>
-          <Button type="link">Edit</Button>
-          <Button type="link" danger>
+          <Button
+            onClick={() => {
+              setSelectedService(record); // Set the selected service data
+              setUpdateServiceModalOpen(true); // Open the edit modal
+            }}
+            type="link"
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() => handleServiceDelete(record.key)}
+            type="link"
+            danger
+          >
             Delete
           </Button>
         </Space>
@@ -180,22 +249,55 @@ const AllServices: React.FC = () => {
   if (isError) return <Text type="danger">Failed to load services</Text>;
 
   return (
-    <div>
-      <Title level={3} style={{ textAlign: "center", marginBottom: "8px" }}>
-        All Services
-      </Title>
-      <Text
-        type="secondary"
-        style={{ display: "block", textAlign: "center", marginBottom: "8px" }}
-      >
-        Manage your services
-      </Text>
-      <Table<ServiceDataType>
-        columns={columns}
-        dataSource={servicesData}
-        rowKey="key"
-      />
-    </div>
+    <>
+      <div>
+        <div>
+          <Title level={3} style={{ textAlign: "center", marginBottom: "8px" }}>
+            All Services
+          </Title>
+          <Text
+            type="secondary"
+            style={{
+              display: "block",
+              textAlign: "center",
+              marginBottom: "8px",
+            }}
+          >
+            Manage your services
+          </Text>
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={() => setAddServiceModalOpen(true)}
+            className="bg-violet-500 text-white px-4 py-2 rounded"
+          >
+            Add Service
+          </button>
+        </div>
+        <Table<ServiceDataType>
+          columns={columns}
+          dataSource={servicesData}
+          rowKey="key"
+        />
+      </div>
+      {addServiceModalOpen && (
+        <AddServicesModal
+          open={addServiceModalOpen}
+          hideModal={() => setAddServiceModalOpen(false)}
+          // data={servicesData[0]}
+          refetchServices={refetchServices}
+        />
+      )}
+
+      {updateServiceModalOpen && (
+        <EditServiceModal
+          open={updateServiceModalOpen}
+          hideModal={() => setUpdateServiceModalOpen(false)}
+          refetchServices={refetchServices}
+          defaultValues={selectedService}
+        />
+      )}
+    </>
   );
 };
 
