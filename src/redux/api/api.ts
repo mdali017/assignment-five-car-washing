@@ -1,11 +1,11 @@
-import { DeleteColumnOutlined } from "@ant-design/icons";
+// import { DeleteColumnOutlined } from "@ant-design/icons";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:4000",
-    // baseUrl: "https://carwashingserver.vercel.app",
+    // baseUrl: "http://localhost:4000",
+    baseUrl: "https://carwashingserver.vercel.app",
   }),
   tagTypes: ["Services"],
   endpoints: (builder) => ({
@@ -18,7 +18,7 @@ export const baseApi = createApi({
       providesTags: ["Services"],
     }),
     createServices: builder.mutation({
-      query: ({ data, token }) => ({
+      query: ({ data }) => ({
         url: "/api/services",
         method: "POST",
         // headers: {
