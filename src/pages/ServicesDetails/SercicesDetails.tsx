@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGetServiceSlotAvailabilityQuery } from "../../redux/api/api";
-import { 
-  Card, 
-  Form, 
-  Input, 
-  Button, 
-  Alert, 
-  Spin, 
-  Typography, 
-  Empty, 
-  message 
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Alert,
+  Spin,
+  Typography,
+  Empty,
+  message,
 } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
@@ -84,6 +84,8 @@ const ServicesDetailsPage: React.FC = () => {
             cus_phone: formData.phone,
             amount: service.price,
             currency: "BDT",
+            success_url: `${window.location.origin}/payment-success`,
+            failure_url: `${window.location.origin}/payment-failure`,
           }),
         }
       );
@@ -94,28 +96,13 @@ const ServicesDetailsPage: React.FC = () => {
         throw new Error(paymentResponse.message || "Payment failed");
       }
 
-      // Save booking details
-      await saveBookingDetails({
-        serviceId: service._id,
-        slotId: selectedSlot?._id,
-        ...formData,
-      });
-
-      message.success("Payment successful!");
-      
-      // Redirect after successful payment
-      setTimeout(() => {
-        navigate("/booking-confirmation", {
-          state: {
-            booking: {
-              service,
-              slot: selectedSlot,
-              customer: formData,
-            },
-          },
-        });
-      }, 2000);
-
+      const paymentUrl = paymentResponse.data?.payment_url;
+      if (paymentUrl) {
+        // Redirect to the payment gateway
+        window.location.href = paymentUrl;
+      } else {
+        throw new Error("Payment URL is missing from the response");
+      }
     } catch (err) {
       message.error(err instanceof Error ? err.message : "Payment failed");
       console.error("Payment error:", err);
@@ -177,19 +164,32 @@ const ServicesDetailsPage: React.FC = () => {
   return (
     <div style={{ background: "#f0f2f5", padding: "24px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "24px",
+          }}
+        >
           {/* Left Side: Service Details and Time Slots */}
           <Card>
             <Title level={2}>{service.name}</Title>
-            <Paragraph>{service.description || "No description available."}</Paragraph>
-            
+            <Paragraph>
+              {service.description || "No description available."}
+            </Paragraph>
+
             {/* Service Image */}
             <div style={{ marginBottom: 24 }}>
               {service.image ? (
                 <img
                   src={service.image}
                   alt={service.name}
-                  style={{ width: "100%", height: 300, objectFit: "cover", borderRadius: 8 }}
+                  style={{
+                    width: "100%",
+                    height: 300,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                  }}
                 />
               ) : (
                 <Empty
@@ -201,7 +201,13 @@ const ServicesDetailsPage: React.FC = () => {
 
             {/* Time Slots */}
             <Title level={4}>Select a Time Slot</Title>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 8,
+              }}
+            >
               {serviceSlots.map((slot: TimeSlot) => (
                 <Button
                   key={slot._id}
@@ -231,12 +237,8 @@ const ServicesDetailsPage: React.FC = () => {
           {/* Right Side: Booking Form */}
           <Card>
             <Title level={2}>Complete Your Booking</Title>
-            
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handlePayment}
-            >
+
+            <Form form={form} layout="vertical" onFinish={handlePayment}>
               <Form.Item
                 name="name"
                 label="Full Name"
@@ -248,7 +250,9 @@ const ServicesDetailsPage: React.FC = () => {
               <Form.Item
                 name="phone"
                 label="Phone Number"
-                rules={[{ required: true, message: "Please enter your phone number" }]}
+                rules={[
+                  { required: true, message: "Please enter your phone number" },
+                ]}
               >
                 <Input placeholder="Enter your phone number" />
               </Form.Item>
@@ -258,7 +262,7 @@ const ServicesDetailsPage: React.FC = () => {
                 label="Email Address"
                 rules={[
                   { required: true, message: "Please enter your email" },
-                  { type: "email", message: "Please enter a valid email" }
+                  { type: "email", message: "Please enter a valid email" },
                 ]}
               >
                 <Input placeholder="Enter your email address" />
@@ -266,7 +270,11 @@ const ServicesDetailsPage: React.FC = () => {
 
               <Form.Item label="Selected Time Slot">
                 <Input
-                  value={selectedSlot ? `${selectedSlot.startTime} - ${selectedSlot.endTime}` : "No slot selected"}
+                  value={
+                    selectedSlot
+                      ? `${selectedSlot.startTime} - ${selectedSlot.endTime}`
+                      : "No slot selected"
+                  }
                   readOnly
                   style={{ background: "#f5f5f5" }}
                 />

@@ -17,6 +17,7 @@ import AdminDashboardLayout from "../layout/AdminDashboardLayout";
 import UserDashboardLayout from "../layout/UserDashboardLayout";
 import Reviews from "../pages/Reviews/Reviews";
 import AllUsers from "../pages/Dashboard/AdminDashboard/Users/AllUsers/AllUsers";
+import PaymentSuccess from "../pages/Payments/PaymentSuccess";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "/reviews",
         element: <Reviews />,
+      },
+      {
+        path: "/payment-success",
+        element: <PaymentSuccess />,
       },
     ],
   },
