@@ -1,208 +1,298 @@
 import React, { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { format } from "date-fns";
-import { useGetSlotAvailabilityQuery } from "../../redux/api/api";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useGetServiceSlotAvailabilityQuery } from "../../redux/api/api";
+import { 
+  Card, 
+  Form, 
+  Input, 
+  Button, 
+  Alert, 
+  Spin, 
+  Typography, 
+  Empty, 
+  message 
+} from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
+const { Title, Text, Paragraph } = Typography;
+
+// Interfaces
 interface Service {
   _id: string;
   name: string;
-  description: string;
-  price: number;
-  duration: string;
+  description?: string;
+  image?: string;
+  price: string;
 }
 
 interface TimeSlot {
   _id: string;
-  date: string;
   startTime: string;
   endTime: string;
-  isBooked: boolean;
+  status: "available" | "booked" | "blocked";
 }
 
-const ServiceDetailsPage = () => {
-  const { id } = useParams<{ id?: string }>();
-  const serviceId = id || null;
+interface FormData {
+  name: string;
+  phone: string;
+  email: string;
+}
+
+const ServicesDetailsPage: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const service = location.state as Service;
-  // console.log(service)
+  const service = location?.state?.service as Service;
+  const [form] = Form.useForm();
 
-  const [selectedDate, setSelectedDate] = useState<string>(
-    format(new Date(), "yyyy-MM-dd")
-  );
+  // States
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-  const [showModal, setShowModal] = useState(false); // for confirmation modal
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: dataavailableSlots = [], isLoading } =
-    useGetSlotAvailabilityQuery({
-      date: selectedDate,
-      serviceId, // Pass the processed `serviceId` here
-    });
+  // Fetch service slots availability
+  const {
+    data: serviceSlotsResponse,
+    isLoading: slotsLoading,
+    isError: slotsError,
+  } = useGetServiceSlotAvailabilityQuery({
+    serviceId: service?._id,
+    date: new Date().toISOString().split("T")[0],
+  });
 
-  console.log(dataavailableSlots);
-  const availableTimeSlots = dataavailableSlots?.data;
+  const serviceSlots = serviceSlotsResponse?.data || [];
 
-  const serviceDetails: Service | null = service || null;
+  // Handle payment
+  const handlePayment = async (formData: FormData) => {
+    try {
+      if (!selectedSlot) {
+        message.error("Please select a time slot");
+        return;
+      }
 
-  // console.log(serviceDetails)
+      setLoading(true);
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
-    setSelectedSlot(null); // Reset selected slot when date changes
-  };
+      // Create payment intent
+      const response = await fetch(
+        "http://localhost:4000/api/payments/create-payment-intent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cus_name: formData.name,
+            cus_email: formData.email,
+            cus_phone: formData.phone,
+            amount: service.price,
+            currency: "BDT",
+          }),
+        }
+      );
 
-  const handleSlotSelect = (slot: TimeSlot) => {
-    if (!slot.isBooked) {
-      setSelectedSlot(slot);
+      const paymentResponse = await response.json();
+
+      if (!response.ok) {
+        throw new Error(paymentResponse.message || "Payment failed");
+      }
+
+      // Save booking details
+      await saveBookingDetails({
+        serviceId: service._id,
+        slotId: selectedSlot?._id,
+        ...formData,
+      });
+
+      message.success("Payment successful!");
+      
+      // Redirect after successful payment
+      setTimeout(() => {
+        navigate("/booking-confirmation", {
+          state: {
+            booking: {
+              service,
+              slot: selectedSlot,
+              customer: formData,
+            },
+          },
+        });
+      }, 2000);
+
+    } catch (err) {
+      message.error(err instanceof Error ? err.message : "Payment failed");
+      console.error("Payment error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleBooking = () => {
-    setShowModal(true); // Show the confirmation modal
+  // Save booking details
+  const saveBookingDetails = async (bookingData: any) => {
+    try {
+      const response = await fetch("http://localhost:4000/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save booking details");
+      }
+    } catch (err) {
+      console.error("Error saving booking:", err);
+      throw err;
+    }
   };
 
-  const confirmBooking = () => {
-    setShowModal(false);
-    alert(
-      `Booking confirmed for ${selectedSlot?.startTime} - ${selectedSlot?.endTime} on ${selectedDate}`
-    );
-  };
-
-  const cancelBooking = () => {
-    setShowModal(false); // Close modal without confirming
-  };
-
-  if (isLoading) {
+  // Handle loading and error states
+  if (!service) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-blue-500 rounded-full" />
+      <div className="flex items-center justify-center h-screen">
+        <Empty description="No service details available" />
+      </div>
+    );
+  }
+
+  if (slotsLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+      </div>
+    );
+  }
+
+  if (slotsError) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Alert
+          message="Error"
+          description="Failed to load slot availability. Please try again later."
+          type="error"
+          showIcon
+        />
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 border border-pink-600">
-      {serviceDetails ? (
-        <>
-          {/* Service Details Section */}
-          <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h1 className="text-4xl font-bold text-blue-600 mb-4">
-              {serviceDetails.name}
-            </h1>
-            <p className="text-gray-800 text-lg mb-4 leading-relaxed">
-              <span className="font-medium text-blue-500">Description:</span>{" "}
-              {serviceDetails.description}
-            </p>
-            <div className="flex items-center justify-between text-gray-700 text-lg mb-4">
-              <p>
-                <span className="font-medium text-blue-500">Price:</span>{" "}
-                <span className="text-xl font-bold text-green-600">
-                  ${serviceDetails.price}
-                </span>
-              </p>
-              <p>
-                <span className="font-medium text-blue-500">Duration:</span>{" "}
-                {serviceDetails.duration} minutes
-              </p>
+    <div style={{ background: "#f0f2f5", padding: "24px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+          {/* Left Side: Service Details and Time Slots */}
+          <Card>
+            <Title level={2}>{service.name}</Title>
+            <Paragraph>{service.description || "No description available."}</Paragraph>
+            
+            {/* Service Image */}
+            <div style={{ marginBottom: 24 }}>
+              {service.image ? (
+                <img
+                  src={service.image}
+                  alt={service.name}
+                  style={{ width: "100%", height: 300, objectFit: "cover", borderRadius: 8 }}
+                />
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="No image available"
+                />
+              )}
             </div>
-          </div>
 
-          {/* Date Picker */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 font-medium mb-2"
-              htmlFor="date"
+            {/* Time Slots */}
+            <Title level={4}>Select a Time Slot</Title>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+              {serviceSlots.map((slot: TimeSlot) => (
+                <Button
+                  key={slot._id}
+                  type={selectedSlot?._id === slot._id ? "primary" : "default"}
+                  disabled={slot.status !== "available"}
+                  onClick={() => setSelectedSlot(slot)}
+                  style={{ height: "auto", padding: "8px" }}
+                >
+                  <div>{slot.startTime}</div>
+                  <small>to {slot.endTime}</small>
+                </Button>
+              ))}
+            </div>
+
+            {/* Price Information */}
+            <Card style={{ marginTop: 24 }} bordered={false}>
+              <Title level={5}>Service Price</Title>
+              <Text style={{ fontSize: 24, color: "#1890ff" }}>
+                {parseFloat(service.price).toLocaleString("en-BD", {
+                  style: "currency",
+                  currency: "BDT",
+                })}
+              </Text>
+            </Card>
+          </Card>
+
+          {/* Right Side: Booking Form */}
+          <Card>
+            <Title level={2}>Complete Your Booking</Title>
+            
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handlePayment}
             >
-              Select Date:
-            </label>
-            <input
-              type="date"
-              id="date"
-              value={selectedDate}
-              onChange={handleDateChange}
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Time Slots Section */}
-          <div className="bg-gray-50 shadow-md rounded-lg p-6 mb-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-6">
-              Available Time Slots
-            </h2>
-            {availableTimeSlots?.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                {availableTimeSlots?.map((slot: any) => (
-                  <button
-                    key={slot._id}
-                    onClick={() => handleSlotSelect(slot)}
-                    disabled={slot.isBooked}
-                    className={`p-4 text-center border rounded-lg transition-all duration-300 
-                      ${
-                        slot.isBooked
-                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : selectedSlot?._id === slot._id
-                          ? "bg-blue-500 text-white shadow-lg"
-                          : "bg-white text-gray-700 hover:bg-blue-100 hover:shadow-md"
-                      }
-                    `}
-                  >
-                    <p className="text-lg font-semibold">{slot.startTime}</p>
-                    <p className="text-sm">{slot.endTime}</p>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="text-red-500 font-medium text-lg mt-4">
-                No Time Slots Available
-              </p>
-            )}
-          </div>
-
-          {/* Booking Button */}
-          {selectedSlot && (
-            <div className="mt-6">
-              <button
-                onClick={handleBooking}
-                className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition"
+              <Form.Item
+                name="name"
+                label="Full Name"
+                rules={[{ required: true, message: "Please enter your name" }]}
               >
-                Book This Service
-              </button>
-            </div>
-          )}
+                <Input placeholder="Enter your full name" />
+              </Form.Item>
 
-          {/* Confirmation Modal */}
-          {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-              <div className="bg-white p-8 rounded-lg w-96">
-                <h3 className="text-xl font-bold text-blue-600 mb-4">
-                  Confirm Your Booking
-                </h3>
-                <p className="mb-6">
-                  Are you sure you want to book {selectedSlot?.startTime} -{" "}
-                  {selectedSlot?.endTime} on {selectedDate}?
-                </p>
-                <div className="flex justify-between">
-                  <button
-                    onClick={cancelBooking}
-                    className="w-1/2 bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={confirmBooking}
-                    className="w-1/2 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        <p>Loading service details...</p>
-      )}
+              <Form.Item
+                name="phone"
+                label="Phone Number"
+                rules={[{ required: true, message: "Please enter your phone number" }]}
+              >
+                <Input placeholder="Enter your phone number" />
+              </Form.Item>
+
+              <Form.Item
+                name="email"
+                label="Email Address"
+                rules={[
+                  { required: true, message: "Please enter your email" },
+                  { type: "email", message: "Please enter a valid email" }
+                ]}
+              >
+                <Input placeholder="Enter your email address" />
+              </Form.Item>
+
+              <Form.Item label="Selected Time Slot">
+                <Input
+                  value={selectedSlot ? `${selectedSlot.startTime} - ${selectedSlot.endTime}` : "No slot selected"}
+                  readOnly
+                  style={{ background: "#f5f5f5" }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  disabled={!selectedSlot}
+                  block
+                  size="large"
+                >
+                  {`Pay ${parseFloat(service.price).toLocaleString("en-BD", {
+                    style: "currency",
+                    currency: "BDT",
+                  })}`}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ServiceDetailsPage;
+export default ServicesDetailsPage;

@@ -15,6 +15,7 @@ import {
   useCreateServiceSlotMutation,
   useGetAllServicesQuery,
 } from "../../../../../redux/api/api";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -22,6 +23,7 @@ const CreateSlot: React.FC = () => {
   const { data: AllServicesData = [] } = useGetAllServicesQuery(undefined);
   const token = localStorage.getItem("token");
   const [createServiceSlot, { isLoading }] = useCreateServiceSlotMutation();
+  const navigate = useNavigate();
 
   const handleSubmit = async (values: any) => {
     const formattedValues = {
@@ -39,6 +41,7 @@ const CreateSlot: React.FC = () => {
       if (response.statusCode === 200) {
         Swal.fire("Success", "Slot created successfully!", "success");
       }
+      navigate("/dashboard/all-slots");
     } catch (err) {
       Swal.fire("Error", "Failed to create slot", "error");
     }

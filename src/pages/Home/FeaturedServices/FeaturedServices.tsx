@@ -15,7 +15,7 @@ const FeaturedServices = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {servicesData?.data?.slice(0, 6)?.map((service: any) => (
-            <Link key={service._id} to={`/services/${service._id}`}>
+            <Link key={service._id} to={`/services/${service._id}`} state={{ service }}>
               <div
                 key={service._id}
                 className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300"

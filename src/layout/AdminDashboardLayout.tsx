@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Avatar, Dropdown, Layout, Menu, theme } from "antd";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -31,11 +31,11 @@ const sidebaritems = [
         name: "All Services",
         path: "/dashboard/all-services",
       },
-      {
-        id: 22,
-        name: "Create Service",
-        path: "/dashboard/create-services",
-      },
+      // {
+      //   id: 22,
+      //   name: "Create Service",
+      //   path: "/dashboard/create-services",
+      // },
     ],
   },
   {
@@ -46,13 +46,13 @@ const sidebaritems = [
     children: [
       {
         id: 31,
-        name: "Create Slot",
-        path: "/dashboard/create-slots",
+        name: "All Slots",
+        path: "/dashboard/all-slots",
       },
       {
         id: 32,
-        name: "All Slots",
-        path: "/dashboard/all-slots",
+        name: "Create Slot",
+        path: "/dashboard/create-slots",
       },
     ],
   },
@@ -77,18 +77,18 @@ const sidebaritems = [
   {
     id: 4,
     name: "Users",
-    path: "/users",
+    path: "/dashboard/users",
     icon: <NotificationOutlined />,
     children: [
       {
         id: 31,
-        name: "Create User",
-        path: "/users/create-user",
+        name: "All Users",
+        path: "/users/all-users",
       },
       {
         id: 32,
-        name: "All Users",
-        path: "/users/all-users",
+        name: "Create User",
+        path: "/users/create-user",
       },
     ],
   },
@@ -110,8 +110,8 @@ const AdminDashboardLayout: React.FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const location = useLocation();
-  console.log(location);
+  // const location = useLocation();
+  // console.log(location);
 
   // Dropdown menu for avatar
   const userMenu: MenuProps["items"] = [
@@ -171,7 +171,7 @@ const AdminDashboardLayout: React.FC = () => {
               mode="inline"
               defaultSelectedKeys={["/dashboard"]}
               defaultOpenKeys={["/settings"]}
-              style={{ height: "100%",  }}
+              style={{ height: "100%" }}
               items={sidebarMenuItems}
             />
           </Sider>

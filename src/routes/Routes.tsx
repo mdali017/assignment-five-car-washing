@@ -16,6 +16,7 @@ import CreateSlot from "../pages/Dashboard/AdminDashboard/Slots/CreateSlot/Creat
 import AdminDashboardLayout from "../layout/AdminDashboardLayout";
 import UserDashboardLayout from "../layout/UserDashboardLayout";
 import Reviews from "../pages/Reviews/Reviews";
+import AllUsers from "../pages/Dashboard/AdminDashboard/Users/AllUsers/AllUsers";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard/create-slots",
         element: <CreateSlot />,
+      },
+      {
+        path: "/dashboard/users",
+        element: <AllUsers />,
       },
     ],
   },

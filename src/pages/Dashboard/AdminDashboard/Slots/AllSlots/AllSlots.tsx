@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { Typography, Table, Button } from "antd";
 import { useGetAllSlotsQuery } from "../../../../../redux/api/api";
 import SlotModal from "../../../../../components/common/SlotModal";
+import { Link } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const AllSlots: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<any>(null); // To store the selected slot details
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
 
   const showModal = (slot: any) => {
     setSelectedSlot(slot);
@@ -16,31 +17,36 @@ const AllSlots: React.FC = () => {
 
   const hideModal = () => {
     setOpen(false);
-    setSelectedSlot(null); // Clear the selected slot
+    setSelectedSlot(null);
   };
 
   const {
     data: allSlotsData,
     isLoading,
     isError,
+    refetch: refetchSlots,
   } = useGetAllSlotsQuery(undefined);
+
+  // console.log(allSlotsData);
 
   if (isLoading) return <Text>Loading...</Text>;
   if (isError) return <Text type="danger">Failed to load slots</Text>;
 
-  // Safely mapping data for the table
   const slotsData = allSlotsData?.data.reduce((result: any, slot: any) => {
     if (slot.service) {
       const existingService = result.find(
         (item: any) => item.serviceId === slot.service._id
       );
       if (existingService) {
-        existingService.slots.push(slot); // Push the entire slot object
+        existingService.slots.push(slot);
       } else {
         result.push({
           serviceId: slot.service._id,
           name: slot.service.name,
-          slots: [slot], // Initialize slots with the entire object
+          date: slot.date,
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+          slots: [slot],
         });
       }
     }
@@ -54,15 +60,30 @@ const AllSlots: React.FC = () => {
       key: "name",
     },
     {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+    },
+    {
+      title: "Start Time",
+      dataIndex: "startTime",
+      key: "startTime",
+    },
+    {
+      title: "End Time",
+      dataIndex: "endTime",
+      key: "endTime",
+    },
+    {
       title: "Slots",
       dataIndex: "slots",
       key: "slots",
       render: (slots: any) => (
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid grid-cols-4 gap-2">
           {slots.map((slot: any, index: number) => (
             <div key={index}>
               <Button
-                onClick={() => showModal(slot)} // Pass the slot data to the modal
+                onClick={() => showModal(slot)}
                 type="primary"
               >
                 {slot.startTime} - {slot.endTime}
@@ -74,29 +95,47 @@ const AllSlots: React.FC = () => {
     },
   ];
 
+  // refetchSlots();
+
+
   return (
     <div>
-      <Title level={3} style={{ textAlign: "center", marginBottom: "8px" }}>
-        All Slots
-      </Title>
-      <Text
-        type="secondary"
-        style={{ display: "block", textAlign: "center", marginBottom: "8px" }}
-      >
-        Manage your slots
-      </Text>
+      <div>
+        <Title level={3} style={{ textAlign: "center", marginBottom: "8px" }}>
+          All Slots
+        </Title>
+        <Text
+          type="secondary"
+          style={{
+            display: "block",
+            textAlign: "center",
+            marginBottom: "8px",
+          }}
+        >
+          Manage your slots
+        </Text>
+      </div>
+      <div className="flex justify-end">
+        <Link to={"/dashboard/create-slots"}>
+          <button className="bg-violet-500 text-white px-4 py-2 rounded">
+            Add Slots
+          </button>
+        </Link>
+      </div>
       <Table
         columns={columns}
         dataSource={slotsData}
         rowKey="serviceId"
         pagination={{ pageSize: 5 }}
+        className="border"
+        style={{ width: "100%" }} // Ensure full-width table
       />
-      {/* Slot Modal */}
       {selectedSlot && (
         <SlotModal
           open={open}
           hideModal={hideModal}
           slot={selectedSlot}
+          rrefetchSlots={refetchSlots}
           onUpdateStatus={function (
             _newStatus: "AVAILABLE" | "CANCELLED"
           ): void {

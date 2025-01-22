@@ -4,10 +4,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "http://localhost:4000",
-    baseUrl: "https://carwashingserver.vercel.app",
+    baseUrl: "http://localhost:4000",
+    // baseUrl: "https://carwashingserver.vercel.app",
   }),
-  tagTypes: ["Services"],
+  tagTypes: ["Services", "Slots", "Users"],
   endpoints: (builder) => ({
     // Services
     getAllServices: builder.query({
@@ -68,14 +68,8 @@ export const baseApi = createApi({
         body: data,
       }),
     }),
-    getSlotAvailability: builder.query({
-      query: ({
-        date,
-        serviceId,
-      }: {
-        date: string;
-        serviceId: string | null;
-      }) => ({
+    getServiceSlotAvailability: builder.query({
+      query: ({ date, serviceId }) => ({
         url: "/api/slots/availability",
         method: "GET",
         params: { date, serviceId },
@@ -91,8 +85,22 @@ export const baseApi = createApi({
         },
       }),
     }),
+    updateSlotStatus: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/api/update-status/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
 
     // Auth
+    getAllUser: builder.query({
+      query: () => ({
+        url: "/api/auth/all-users",
+        method: "GET",
+      }),
+      providesTags: ["Users"],
+    }),
     userRegistration: builder.mutation({
       query: (data) => ({
         url: "/api/auth/signup",
@@ -115,10 +123,12 @@ export const {
   useUpdateServiceMutation,
   useDeleteServiceMutation,
   useUserRegistrationMutation,
+  useGetAllUserQuery,
   useUserLoginMutation,
-  useGetSlotAvailabilityQuery,
+  useGetServiceSlotAvailabilityQuery,
   useCreateServicesMutation,
   useCreateServiceSlotMutation,
   useGetAllAvailableSlotsQuery,
   useGetAllSlotsQuery,
+  useUpdateSlotStatusMutation,
 } = baseApi;
