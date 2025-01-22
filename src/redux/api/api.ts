@@ -115,6 +115,25 @@ export const baseApi = createApi({
         body: data,
       }),
     }),
+
+    // Reviews
+    createReview: builder.mutation({
+      query: ({ data }): any => ({
+        url: "/api/reviews/create-review",
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        //   Authorization: token,
+        // },
+        body: data,
+      }),
+    }),
+    getAllReviews: builder.query({
+      query: () => ({
+        url: "/api/reviews/all-reviews",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -131,4 +150,6 @@ export const {
   useGetAllAvailableSlotsQuery,
   useGetAllSlotsQuery,
   useUpdateSlotStatusMutation,
+  useCreateReviewMutation,
+  useGetAllReviewsQuery,
 } = baseApi;
