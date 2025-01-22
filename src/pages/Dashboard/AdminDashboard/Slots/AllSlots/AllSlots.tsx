@@ -24,7 +24,7 @@ const AllSlots: React.FC = () => {
     data: allSlotsData,
     isLoading,
     isError,
-    refetch: refetchSlots,
+    // refetch: refetchSlots,
   } = useGetAllSlotsQuery(undefined);
 
   // console.log(allSlotsData);
@@ -135,12 +135,12 @@ const AllSlots: React.FC = () => {
           open={open}
           hideModal={hideModal}
           slot={selectedSlot}
-          rrefetchSlots={refetchSlots}
-          onUpdateStatus={function (
-            _newStatus: "AVAILABLE" | "CANCELLED"
-          ): void {
-            throw new Error("Function not implemented.");
-          }}
+          // rrefetchSlots={refetchSlots}
+          // onUpdateStatus={function (
+          //   _newStatus: "AVAILABLE" | "CANCELLED"
+          // ): void {
+          //   throw new Error("Function not implemented.");
+          // }}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useGetServiceSlotAvailabilityQuery } from "../../redux/api/api";
 import {
   Card,
@@ -39,7 +39,7 @@ interface FormData {
 }
 
 const ServicesDetailsPage: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const service = location?.state?.service as Service;
   const [form] = Form.useForm();
@@ -112,24 +112,24 @@ const ServicesDetailsPage: React.FC = () => {
   };
 
   // Save booking details
-  const saveBookingDetails = async (bookingData: any) => {
-    try {
-      const response = await fetch("http://localhost:4000/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingData),
-      });
+  // const saveBookingDetails = async (bookingData: any) => {
+  //   try {
+  //     const response = await fetch("http://localhost:4000/api/bookings", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(bookingData),
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Failed to save booking details");
-      }
-    } catch (err) {
-      console.error("Error saving booking:", err);
-      throw err;
-    }
-  };
+  //     if (!response.ok) {
+  //       throw new Error("Failed to save booking details");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error saving booking:", err);
+  //     throw err;
+  //   }
+  // };
 
   // Handle loading and error states
   if (!service) {

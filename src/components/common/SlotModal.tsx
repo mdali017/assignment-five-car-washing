@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Tooltip, Select, message } from "antd";
-import { MdOutlineDeleteOutline } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
+// import { MdOutlineDeleteOutline } from "react-icons/md";
+// import { FaEdit } from "react-icons/fa";
 import { useUpdateSlotStatusMutation } from "../../redux/api/api";
 
 const { Option } = Select;
@@ -19,16 +19,16 @@ interface SlotModalProps {
   open: boolean;
   hideModal: () => void;
   slot: Slot;
-  refetchSlots: () => void;
-  onUpdateStatus: (newStatus: "available" | "cencelled") => void;
+  // refetchSlots: () => void;
+  // onUpdateStatus: (newStatus: "available" | "cencelled") => void;
 }
 
 const SlotModal: React.FC<SlotModalProps> = ({
   open,
   hideModal,
   slot,
-  refetchSlots,
-  onUpdateStatus,
+  // refetchSlots,
+  // onUpdateStatus,
 }) => {
   const [updateSlotStatus, { isLoading }] = useUpdateSlotStatusMutation();
   const [currentStatus, setCurrentStatus] = useState<"available" | "cencelled">(
@@ -46,7 +46,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
       return;
     }
 
-    const response = await updateSlotStatus({
+   await updateSlotStatus({
       id: slot._id,
       data: { status: value },
     }).unwrap();

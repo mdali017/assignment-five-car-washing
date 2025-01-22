@@ -3,7 +3,7 @@ import { useGetAllUserQuery } from "../../../../../redux/api/api";
 import { Table, Select, Button, Space } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-const AllUsers = () => {
+const AllUsers: React.FC = () => {
   const { data: allUsersData = {}, isLoading } = useGetAllUserQuery(undefined);
   const [users, setUsers] = useState<any[]>([]);
 
@@ -32,7 +32,7 @@ const AllUsers = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (text: any, record: any) => `${record.name.firstName} ${record.name.lastName}`,
+      render: (_text: any, record: any) => `${record.name.firstName} ${record.name.lastName}`,
     },
     {
       title: "Email",
@@ -48,7 +48,7 @@ const AllUsers = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <Select
           value={record.role}
           onChange={(value) => handleRoleChange(record._id, value)}
@@ -62,7 +62,7 @@ const AllUsers = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (text: any, record: any) => (
+      render: (_text: any, record: any) => (
         <Space size="middle">
           <Button icon={<UserOutlined />} onClick={() => console.log(`Editing user ${record._id}`)}>
             Edit
