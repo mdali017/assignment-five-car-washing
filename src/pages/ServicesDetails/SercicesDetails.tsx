@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useGetServiceSlotAvailabilityQuery } from "../../redux/api/api";
+import {
+  useCreateBookingMutation,
+  useGetServiceSlotAvailabilityQuery,
+} from "../../redux/api/api";
 import {
   Card,
   Form,
@@ -13,6 +16,7 @@ import {
   message,
 } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import Swal from "sweetalert2";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -48,6 +52,8 @@ const ServicesDetailsPage: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [createBooking] = useCreateBookingMutation();
+
   // Fetch service slots availability
   const {
     data: serviceSlotsResponse,
@@ -62,53 +68,68 @@ const ServicesDetailsPage: React.FC = () => {
 
   // Handle payment
   const handlePayment = async (formData: FormData) => {
-    try {
-      if (!selectedSlot) {
-        message.error("Please select a time slot");
-        return;
-      }
-
-      setLoading(true);
-
-      // Create payment intent
-      const response = await fetch(
-        "http://localhost:4000/api/payments/create-payment-intent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cus_name: formData.name,
-            cus_email: formData.email,
-            cus_phone: formData.phone,
-            amount: service.price,
-            currency: "BDT",
-            success_url: `${window.location.origin}/payment-success`,
-            failure_url: `${window.location.origin}/payment-failure`,
-          }),
-        }
-      );
-
-      const paymentResponse = await response.json();
-
-      if (!response.ok) {
-        throw new Error(paymentResponse.message || "Payment failed");
-      }
-
-      const paymentUrl = paymentResponse.data?.payment_url;
-      if (paymentUrl) {
-        // Redirect to the payment gateway
-        window.location.href = paymentUrl;
-      } else {
-        throw new Error("Payment URL is missing from the response");
-      }
-    } catch (err) {
-      message.error(err instanceof Error ? err.message : "Payment failed");
-      console.error("Payment error:", err);
-    } finally {
-      setLoading(false);
+    if (!selectedSlot) {
+      message.error("Please select a time slot");
+      return;
     }
+
+    const data = {
+      ...formData,
+      slot: selectedSlot._id,
+      serviceI: service.price, // Pass actual price
+    };
+
+ const finalBooking =   {
+      customer: data.name,
+      serviceId: service._id,
+      slotId: selectedSlot._id,
+      vehicleType: "car",
+      vehicleBrand: "Toyota",
+      vehicleModel: "Camry",
+      manufacturingYear: 2020,
+      registrationPlate: "ABC123"
+    }
+
+    console.log(finalBooking);
+
+    try {
+      const response = await createBooking({
+        finalBooking,
+      }).unwrap();
+
+      console.log(response);
+
+      if (response.statusCode === 200) {
+        Swal.fire("Success", "Booking successful!", "success");
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire("Error", "Booking failed", "error");
+    }
+
+    // try {
+    //   setLoading(true);
+    //   const response = await fetch("http://localhost:4000/create-payment-intent", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(data),
+    //   });
+
+    //   const result = await response.json();
+
+    //   if (result.url) {
+    //     window.location.replace(result.url);
+    //   } else {
+    //     message.error("Failed to initialize payment");
+    //   }
+    // } catch (error) {
+    //   console.error("Payment initialization error:", error);
+    //   message.error("Payment failed");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   // Save booking details

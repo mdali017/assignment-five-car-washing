@@ -3,12 +3,13 @@ import {
   Form,
   Button,
   Typography,
-  Row,
-  Col,
   DatePicker,
   TimePicker,
   Select,
+  InputNumber,
+  Card,
 } from "antd";
+import { ClockCircleOutlined, AppstoreOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import {
@@ -17,20 +18,24 @@ import {
 } from "../../../../../redux/api/api";
 import { useNavigate } from "react-router-dom";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
+const { RangePicker } = DatePicker;
 
 const CreateSlot: React.FC = () => {
   const { data: AllServicesData = [] } = useGetAllServicesQuery(undefined);
   const token = localStorage.getItem("token");
   const [createServiceSlot, { isLoading }] = useCreateServiceSlotMutation();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
 
   const handleSubmit = async (values: any) => {
     const formattedValues = {
       serviceId: values.serviceId,
-      date: values.date.format("YYYY-MM-DD"),
+      startDate: values.dateRange[0].format("YYYY-MM-DD"),
+      endDate: values.dateRange[1].format("YYYY-MM-DD"),
       startTime: values.startTime.format("HH:mm"),
       endTime: values.endTime.format("HH:mm"),
+      serviceDuration: values.serviceDuration
     };
 
     try {
@@ -39,48 +44,77 @@ const CreateSlot: React.FC = () => {
         token: `Bearer ${token}`,
       }).unwrap();
       if (response.statusCode === 200) {
-        Swal.fire("Success", "Slot created successfully!", "success");
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Slots have been created successfully',
+          confirmButtonColor: '#1890ff'
+        });
+        navigate("/dashboard/all-slots");
       }
-      navigate("/dashboard/all-slots");
     } catch (err) {
-      Swal.fire("Error", "Failed to create slot", "error");
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to create slots',
+        confirmButtonColor: '#1890ff'
+      });
     }
   };
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        padding: "24px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <Title level={3} style={{ textAlign: "center", marginBottom: "24px" }}>
-        Create Slot
+    <div style={{ padding: "20px" }}>
+      <Title 
+        level={2} 
+        style={{ 
+          textAlign: 'center',
+          marginBottom: '40px',
+          background: 'linear-gradient(120deg, #1890ff, #52c41a)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}
+      >
+        Create Service Slots
       </Title>
-      <Text type="secondary" style={{ display: "block", textAlign: "center" }}>
-        Provide the details to create a new slot.
-      </Text>
+
       <Form
+        form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        style={{ marginTop: "24px" }}
+        initialValues={{ serviceDuration: 60 }}
       >
-        <Row gutter={16}>
-          <Col xs={24} sm={12}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(2, 1fr)', 
+          gap: '24px',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          {/* Left Card */}
+          <Card
+            className="shadow-lg"
+            style={{
+              borderRadius: '16px',
+              border: 'none',
+              height: '100%'
+            }}
+          >
+            <div className="flex items-center mb-6">
+              <AppstoreOutlined style={{ fontSize: '24px', color: '#1890ff', marginRight: '12px' }}/>
+              <Title level={4} style={{ margin: 0 }}>Service Details</Title>
+            </div>
+
             <Form.Item
-              label="Service"
+              label="Select Service"
               name="serviceId"
-              rules={[{ required: true, message: "Service is required" }]}
+              rules={[{ required: true, message: "Please select a service" }]}
             >
               <Select
                 showSearch
-                placeholder="Select a service"
+                size="large"
+                placeholder="Choose a service"
                 filterOption={(input, option: any) =>
-                  (option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                 }
                 options={AllServicesData?.data?.map((service: any) => ({
                   value: service._id,
@@ -88,74 +122,94 @@ const CreateSlot: React.FC = () => {
                 }))}
               />
             </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
+
             <Form.Item
-              label="Date"
-              name="date"
-              rules={[{ required: true, message: "Date is required" }]}
+              label="Select Date Range"
+              name="dateRange"
+              rules={[{ required: true, message: "Please select date range" }]}
             >
-              <DatePicker
+              <RangePicker
+                size="large"
                 style={{ width: "100%" }}
-                placeholder="Select Date"
-                disabledDate={(current) =>
-                  current && current < dayjs().startOf("day")
-                }
+                disabledDate={(current) => current && current < dayjs().startOf("day")}
               />
             </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
+
+            <Form.Item
+              label="Duration (minutes)"
+              name="serviceDuration"
+              rules={[{ required: true, message: "Duration is required" }]}
+            >
+              <InputNumber
+                size="large"
+                style={{ width: "100%" }}
+                min={15}
+                max={480}
+                step={15}
+              />
+            </Form.Item>
+          </Card>
+
+          {/* Right Card */}
+          <Card
+            className="shadow-lg"
+            style={{
+              borderRadius: '16px',
+              border: 'none',
+              height: '100%'
+            }}
+          >
+            <div className="flex items-center mb-6">
+              <ClockCircleOutlined style={{ fontSize: '24px', color: '#1890ff', marginRight: '12px' }}/>
+              <Title level={4} style={{ margin: 0 }}>Time Settings</Title>
+            </div>
+
             <Form.Item
               label="Start Time"
               name="startTime"
-              rules={[{ required: true, message: "Start Time is required" }]}
+              rules={[{ required: true, message: "Start time is required" }]}
             >
-              <TimePicker
-                style={{ width: "100%" }}
-                placeholder="Select Start Time"
-                format="HH:mm"
-              />
+              <TimePicker size="large" style={{ width: "100%" }} format="HH:mm" />
             </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
+
             <Form.Item
               label="End Time"
               name="endTime"
               rules={[
-                { required: true, message: "End Time is required" },
+                { required: true, message: "End time is required" },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (
-                      !value ||
-                      value.isAfter(getFieldValue("startTime"), "minute")
-                    ) {
+                    if (!value || value.isAfter(getFieldValue("startTime"), "minute")) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(
-                      new Error("End Time must be after Start Time")
-                    );
+                    return Promise.reject(new Error("End time must be after start time"));
                   },
                 }),
               ]}
             >
-              <TimePicker
-                style={{ width: "100%" }}
-                placeholder="Select End Time"
-                format="HH:mm"
-              />
+              <TimePicker size="large" style={{ width: "100%" }} format="HH:mm" />
             </Form.Item>
-          </Col>
-        </Row>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: "100%" }}
-            loading={isLoading}
-          >
-            Submit
-          </Button>
-        </Form.Item>
+
+            <Form.Item style={{ marginTop: '40px' }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                loading={isLoading}
+                style={{
+                  width: "100%",
+                  height: "50px",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  background: "linear-gradient(120deg, #1890ff, #52c41a)",
+                  border: "none",
+                }}
+              >
+                Create Slots
+              </Button>
+            </Form.Item>
+          </Card>
+        </div>
       </Form>
     </div>
   );

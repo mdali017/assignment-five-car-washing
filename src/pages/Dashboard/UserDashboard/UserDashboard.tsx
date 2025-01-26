@@ -1,135 +1,159 @@
-import { useState, useEffect } from "react";
-
-interface Booking {
-  id: string;
-  serviceName: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  isUpcoming: boolean;
-}
+import React, { useState } from "react";
+import { UserOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
 
 const UserDashboard = () => {
-  const [bookings, ] = useState<Booking[]>([
-    // Mock Data: Replace with API fetch
-    {
-      id: "1",
-      serviceName: "Spa Therapy",
-      date: "2024-11-20",
-      startTime: "10:00",
-      endTime: "11:00",
-      isUpcoming: true,
-    },
-    {
-      id: "2",
-      serviceName: "Haircut",
-      date: "2024-11-15",
-      startTime: "14:00",
-      endTime: "14:30",
-      isUpcoming: false,
-    },
-  ]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: "Md. Ali Hasan",
+    email: "ali.hasan@example.com",
+    phone: "+880 1234 567890",
+  });
 
-  const [, setTimeLeft] = useState<string | null>(null);
+  const handleSave = () => {
+    setIsEditing(false);
+    alert("Profile updated successfully");
+  };
 
-  useEffect(() => {
-    // Calculate countdown for the next upcoming booking
-    const nextBooking = bookings.find((b) => b.isUpcoming);
-    if (nextBooking) {
-      const interval = setInterval(() => {
-        const now = new Date();
-        const bookingTime = new Date(
-          `${nextBooking.date}T${nextBooking.startTime}`
-        );
-        const diff = bookingTime.getTime() - now.getTime();
+  let isPositive = true;
 
-        if (diff <= 0) {
-          clearInterval(interval);
-          setTimeLeft(null);
-        } else {
-          const hours = Math.floor(diff / (1000 * 60 * 60));
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-          setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
-        }
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [bookings]);
+  const data = [
+    { title: "Profit", amount: 240.94, percentage: 67.81, isPositive: true },
+    { title: "Revenue", amount: 120.5, percentage: 34.27, isPositive: false },
+    { title: "Revenue", amount: 120.5, percentage: 34.27, isPositive: false },
+    { title: "Revenue", amount: 120.5, percentage: 34.27, isPositive: false },
+  ];
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">User Dashboard</h1>
+    <div>
+      {/* state management  */}
 
-      {/* Profile Section */}
-      {/* <div className="border p-4 rounded-md shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
-          Update Profile
-        </button>
-      </div> */}
-
-      {/* Countdown Timer */}
-      {/* {timeLeft && (
-        <div className="bg-blue-100 border border-blue-300 p-4 rounded-md mb-6">
-          <h2 className="text-lg font-semibold">
-            Time Until Next Booking:{" "}
-            <span className="text-blue-600 font-bold">{timeLeft}</span>
-          </h2>
-        </div>
-      )} */}
-
-      {/* Past Bookings */}
-      {/* <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Past Bookings</h2>
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border p-2">Service</th>
-              <th className="border p-2">Date</th>
-              <th className="border p-2">Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings
-              .filter((b) => !b.isUpcoming)
-              .map((booking) => (
-                <tr key={booking.id}>
-                  <td className="border p-2">{booking.serviceName}</td>
-                  <td className="border p-2">{booking.date}</td>
-                  <td className="border p-2">
-                    {booking.startTime} - {booking.endTime}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div> */}
-
-      {/* Upcoming Bookings */}
-      {/* <div>
-        <h2 className="text-xl font-semibold mb-4">Upcoming Bookings</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {bookings
-            .filter((b) => b.isUpcoming)
-            .map((booking) => (
-              <div
-                key={booking.id}
-                className="border p-4 rounded-md shadow-md bg-white"
+      <div className="flex items-center gap-20 shadow-xl bg-black py-5 px-5">
+        {data?.map((item, idx) => (
+          <article
+            key={idx}
+            className="flex items-end justify-between rounded-lg border border-gray-100 bg-white p-6"
+          >
+            <div>
+              <p className="text-sm text-gray-500">{item?.title}</p>
+              <p className="text-2xl font-medium text-gray-900">
+                ${item?.amount}
+              </p>
+            </div>
+            <div
+              className={`inline-flex gap-2 rounded p-1 ${
+                isPositive
+                  ? "bg-green-100 text-green-600"
+                  : "bg-red-100 text-red-600"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="size-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <h3 className="text-lg font-bold">{booking.serviceName}</h3>
-                <p className="text-gray-600">
-                  {booking.date} | {booking.startTime} - {booking.endTime}
-                </p>
-                <p className="text-blue-500 font-semibold">
-                  Countdown:{" "}
-                  {timeLeft && booking.id === bookings[0].id ? timeLeft : "N/A"}
-                </p>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d={`M13 ${isPositive ? "7" : "17"}h8m0 0V${
+                    isPositive ? "8" : "9"
+                  }m0 ${isPositive ? "-1l-8 8-4-4-6 6" : "1l-8-8-4 4-6-6"}`}
+                />
+              </svg>
+              <span className="text-xs font-medium">20%</span>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {/* Profile Managemnt */}
+      <div className="flex justify-center items-center  bg-gray-100">
+        <div className="w-full  bg-white shadow-lg rounded-lg p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 flex justify-center items-center bg-blue-500 text-white rounded-full">
+                <UserOutlined className="text-3xl" />
               </div>
-            ))}
+              <h2 className="text-2xl font-bold">Profile Management</h2>
+            </div>
+            <button
+              onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+              className={`px-4 py-2 text-white font-semibold rounded-lg flex items-center space-x-2 transition-all ${
+                isEditing
+                  ? "bg-green-500 hover:bg-green-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+              }`}
+            >
+              {isEditing ? <SaveOutlined /> : <EditOutlined />}
+              <span>{isEditing ? "Save Changes" : "Edit Profile"}</span>
+            </button>
+          </div>
+
+          <form className="space-y-6">
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Full Name
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={profileData.name}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, name: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                />
+              ) : (
+                <p className="px-4 py-2 bg-gray-100 rounded-lg">
+                  {profileData.name}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Email Address
+              </label>
+              {isEditing ? (
+                <input
+                  type="email"
+                  value={profileData.email}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, email: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                />
+              ) : (
+                <p className="px-4 py-2 bg-gray-100 rounded-lg">
+                  {profileData.email}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Phone Number
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={profileData.phone}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, phone: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+                />
+              ) : (
+                <p className="px-4 py-2 bg-gray-100 rounded-lg">
+                  {profileData.phone}
+                </p>
+              )}
+            </div>
+          </form>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

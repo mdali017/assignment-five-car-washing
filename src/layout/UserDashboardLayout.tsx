@@ -17,89 +17,36 @@ const sidebaritems = [
   {
     id: 1,
     name: "Dashboard",
-    path: "/user_dashboard",
+    path: "/dashboard/user",
     icon: <DashboardOutlined />,
   },
   {
     id: 2,
     name: "Past Bookings",
-    path: "/dashboard/all-services",
+    path: "/dashboard/user/past-bookings",
     icon: <LaptopOutlined />,
-    // children: [
-    //   {
-    //     id: 21,
-    //     name: "Create Service",
-    //     path: "/dashboard/create-services",
-    //   },
-    //   {
-    //     id: 22,
-    //     name: "All Services",
-    //     path: "/dashboard/all-services",
-    //   },
-    // ],
   },
   {
     id: 3,
     name: "Upcoming Bookings",
-    path: "/dashboard/all-slots",
+    path: "/dashboard/user/upcoming-booking",
     icon: <NotificationOutlined />,
-    // children: [
-    //   {
-    //     id: 31,
-    //     name: "Create Slot",
-    //     path: "/dashboard/create-slots",
-    //   },
-    //   {
-    //     id: 32,
-    //     name: "All Slots",
-    //     path: "/dashboard/all-slots",
-    //   },
-    // ],
   },
-  //   {
-  //     id: 4,
-  //     name: "Bookings",
-  //     path: "/notifications",
-  //     icon: <NotificationOutlined />,
-  //     children: [
-  //       {
-  //         id: 31,
-  //         name: "Messages",
-  //         path: "/notifications/messages",
-  //       },
-  //       {
-  //         id: 32,
-  //         name: "Alerts",
-  //         path: "/notifications/alerts",
-  //       },
-  //     ],
-  //   },
+
   {
     id: 4,
-    name: "Reviews ",
-    path: "/users",
+    name: "Service Slot Coundown",
+    path: "/dashboard/user/service-slot-coundown",
     icon: <NotificationOutlined />,
-    children: [
-      {
-        id: 31,
-        name: "Create Review",
-        path: "/users/create-user",
-      },
-      {
-        id: 32,
-        name: "All Reviews",
-        path: "/users/all-users",
-      },
-    ],
   },
 ];
 
 // Generate menu items from sidebaritems with children
-const sidebarMenuItems: MenuProps["items"] = sidebaritems.map((item) => ({
+const sidebarMenuItems: MenuProps["items"] = sidebaritems.map((item: any) => ({
   key: item.path, // Use path as key
   icon: item.icon,
   label: <Link to={item.path}>{item.name}</Link>, // Use Link for navigation
-  children: item.children?.map((child) => ({
+  children: item.children?.map((child: any) => ({
     key: child.path,
     label: <Link to={child.path}>{child.name}</Link>, // Use Link for child items
   })),
@@ -109,9 +56,6 @@ const UserDashboardLayout: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
-  const location = useLocation();
-  console.log(location);
 
   // Dropdown menu for avatar
   const userMenu: MenuProps["items"] = [

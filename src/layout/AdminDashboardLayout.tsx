@@ -129,7 +129,7 @@ const AdminDashboardLayout: React.FC = () => {
 
   return (
     <Layout>
-      <Header style={{ display: "flex", alignItems: "center" }}>
+      <Header style={{ display: "flex", alignItems: "center", }}>
         <div className="demo-logo" />
         <Menu
           theme="dark"
@@ -175,14 +175,16 @@ const AdminDashboardLayout: React.FC = () => {
               items={sidebarMenuItems}
             />
           </Sider>
-          <Content style={{ padding: "0 24px", minHeight: 480 }}>
-            <Outlet />
+          <Content style={{ padding: "0 24px" }}>
+            <div className="min-h-[80vh] border border-red-500 overflow-y-scroll">
+              <Outlet />
+            </div>
           </Content>
         </Layout>
       </Content>
-      <Footer style={{ textAlign: "center" }}>
+      {/* <Footer style={{ textAlign: "center" }}>
         Magnetic Codes ©{new Date().getFullYear()} Created by Mohabbat
-      </Footer>
+      </Footer> */}
     </Layout>
   );
 };

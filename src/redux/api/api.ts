@@ -93,6 +93,19 @@ export const baseApi = createApi({
       }),
     }),
 
+    // bookings
+    createBooking: builder.mutation({
+      query: ({ data}): any => ({
+        url: "/api/payments/create-payment",
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        //   Authorization: token,
+        // },
+        body: data,
+      }),
+    }),
+
     // Auth
     getAllUser: builder.query({
       query: () => ({
@@ -152,4 +165,5 @@ export const {
   useUpdateSlotStatusMutation,
   useCreateReviewMutation,
   useGetAllReviewsQuery,
+  useCreateBookingMutation
 } = baseApi;

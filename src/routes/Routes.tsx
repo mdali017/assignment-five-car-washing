@@ -18,6 +18,9 @@ import UserDashboardLayout from "../layout/UserDashboardLayout";
 import Reviews from "../pages/Reviews/Reviews";
 import AllUsers from "../pages/Dashboard/AdminDashboard/Users/AllUsers/AllUsers";
 import PaymentSuccess from "../pages/Payments/PaymentSuccess";
+import PastBookings from "../pages/Dashboard/UserDashboard/PastBookings/PastBookings";
+import UpcomingBooking from "../pages/Dashboard/UserDashboard/UpcomingBooking/UpcomingBooking";
+import ServiceSlotCountdown from "../pages/Dashboard/UserDashboard/ServicesSlotCoundown/ServicesSlotCoundown";
 
 const router = createBrowserRouter([
   {
@@ -46,7 +49,7 @@ const router = createBrowserRouter([
         element: <Reviews />,
       },
       {
-        path: "/payment-success",
+        path: "/payment/success/:transactionId",
         element: <PaymentSuccess />,
       },
     ],
@@ -90,12 +93,24 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "user_dashboard",
+    path: "/dashboard/user",
     element: <UserDashboardLayout />,
     children: [
       {
-        path: "/user_dashboard",
+        path: "",
         element: <UserDashboard />,
+      },
+      {
+        path: "past-bookings",
+        element: <PastBookings />,
+      },
+      {
+        path: "upcoming-booking",
+        element: <UpcomingBooking />,
+      },
+      {
+        path: "service-slot-coundown",
+        element: <ServiceSlotCountdown />,
       },
     ],
   },

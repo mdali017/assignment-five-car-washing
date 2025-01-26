@@ -1,36 +1,95 @@
-import React from "react";
+// PaymentSuccess.tsx
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const PaymentSuccess: React.FC = () => {
+interface PaymentStatus {
+  pay_status: string;
+  cus_name: string;
+  amount: string;
+  currency: string;
+  pay_time: string;
+  tran_id: string;
+}
+
+const PaymentSuccess = () => {
+  const [paymentData, setPaymentData] = useState<PaymentStatus | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get payment data from URL parameters
+    const params = new URLSearchParams(location.search);
+    const status = {
+      pay_status: params.get("pay_status") || "",
+      cus_name: params.get("cus_name") || "",
+      amount: params.get("amount") || "",
+      currency: params.get("currency") || "",
+      pay_time: params.get("pay_time") || "",
+      tran_id: params.get("tran_id") || "",
+    };
+
+    // if (status.pay_status === "Successful") {
+    //   setPaymentData(status);
+    // } else {
+    //   // If no valid payment data, redirect to home
+    //   navigate("/");
+    // }
+  }, [location, navigate]);
+
+  // if (!paymentData) {
+  //   return <div>Loading...</div>;
+  // }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 via-blue-500 to-purple-600">
-      <div className="max-w-md p-6 bg-white shadow-lg rounded-lg text-center">
-        <div className="mb-4">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-green-600">
+          Payment Successful!
+        </h1>
+        <div className="check-mark mt-4">
           <svg
             className="w-16 h-16 mx-auto text-green-500"
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
-            viewBox="0 0 24 24"
             stroke="currentColor"
+            viewBox="0 0 24 24"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4M7 12h.01M15 12h.01M9 12l2 2 4-4"
+              strokeWidth="2"
+              d="M5 13l4 4L19 7"
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Payment Successful!
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Thank you for your payment. Your transaction was successful.
-        </p>
+      </div>
+
+      {/* <div className="space-y-4">
+        <div className="border-b pb-2">
+          <p className="text-gray-600">Transaction ID</p>
+          <p className="font-semibold">{paymentData.tran_id}</p>
+        </div>
+        <div className="border-b pb-2">
+          <p className="text-gray-600">Customer Name</p>
+          <p className="font-semibold">{paymentData.cus_name}</p>
+        </div>
+        <div className="border-b pb-2">
+          <p className="text-gray-600">Amount</p>
+          <p className="font-semibold">
+            {paymentData.amount} {paymentData.currency}
+          </p>
+        </div>
+        <div className="border-b pb-2">
+          <p className="text-gray-600">Payment Time</p>
+          <p className="font-semibold">{paymentData.pay_time}</p>
+        </div>
+      </div> */}
+
+      <div className="mt-8">
         <button
-          onClick={() => (window.location.href = "/dashboard")} // Redirect example
-          className="px-6 py-3 text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none"
+          onClick={() => navigate("/")}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
         >
-          Go to Dashboard
+          Return to Home
         </button>
       </div>
     </div>

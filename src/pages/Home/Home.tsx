@@ -4,6 +4,9 @@ import FeaturedServices from "./FeaturedServices/FeaturedServices";
 import HeroSection from "./HeroSection/HeroSection";
 import OurSpeciality from "./OurSpeciality/OurSpeciality";
 import ReviewSection from "./ReviewSection/ReviewSection";
+import TeamSection from "./TeamSection/TeamSection";
+import BookingSection from "./BookingSection";
+import GuideSection from "./GuideSection/GuideSection";
 
 const Home = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -29,6 +32,9 @@ const Home = () => {
     <div className="relative">
       <HeroSection />
       <FeaturedServices />
+      <BookingSection />
+      <TeamSection />
+      <GuideSection />
       <OurSpeciality />
       <ReviewSection />
 
